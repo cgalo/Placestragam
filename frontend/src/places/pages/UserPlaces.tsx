@@ -1,4 +1,6 @@
 import React from 'react';
+import { useParams } from 'react-router-dom';
+
 
 import PlaceList from '../components/PlaceList';
 
@@ -34,9 +36,10 @@ const PLACES:Array<Place> = [
 ];
 
 const UserPlaces:React.FC<{}> = (props) => {
-    
+    const userId = useParams<any>().userId;     // Get the user id of the current user
+    const userPlaces = PLACES.filter(place => place.creator === userId);   // Save only the user's places
     return (
-        <PlaceList items={PLACES} />
+        <PlaceList items={userPlaces} />
     );
 }
 
