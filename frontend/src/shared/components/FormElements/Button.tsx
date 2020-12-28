@@ -16,9 +16,7 @@ interface ButtonProp {
 }
 
 const Button:React.FC<ButtonProp> = (props) => {
-    const ButtonProp = {
-        term : props.exact
-    }
+    
     if (props.href) {
         return (
             <a 
