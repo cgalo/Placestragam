@@ -1,8 +1,8 @@
 import React from 'react';
 
-import './UserList.css';
 import UserItem from './UserItem';
 import {User} from './types';
+import './UserList.css';
 
 interface UserListProps {
     items: Array<User>;         // List of users
@@ -21,7 +21,7 @@ const UserList: React.FC<UserListProps> = (props) => {
         <ul className="users-list">
             {props.items.map(user => (
                 <UserItem 
-                    key={user.id} 
+                    key={user.id.valueOf()}
                     id={user.id} 
                     image={user.image} 
                     name={user.name} 
