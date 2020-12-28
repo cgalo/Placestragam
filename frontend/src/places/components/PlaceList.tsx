@@ -1,0 +1,44 @@
+import React from 'react';
+
+import Card from '../../shared/components/UIElements/Card';
+import PlaceItem from './PlaceItem';
+
+import './PlaceList.css';
+import { Place } from './types';
+
+interface PlaceListProp {
+    items: Array<Place>;
+}
+
+const PlaceList:React.FC<PlaceListProp> = (props) => {
+    if (props.items.length === 0) {
+        return (
+        <div className="place-list center">
+            <Card>
+                <h2>No places found. Perhaps create one?</h2>
+                <button>Share Place</button>
+            </Card>
+        </div>
+        );
+    }
+
+    // We get here if the user has at least one place
+    return (
+        <ul className="place-list">
+            {props.items.map(place => (
+                <PlaceItem 
+                    key={place.id.valueOf()} 
+                    id={place.id}
+                    image={place.imageUrl}
+                    title={place.title}
+                    description={place.description}
+                    address={place.address}
+                    creatorId={place.creator}
+                    coordinates={place.location}
+                />
+            ))}
+        </ul>
+    );
+}
+
+export default PlaceList;
