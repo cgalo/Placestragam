@@ -34,7 +34,9 @@ const PlaceItem:React.FC<PlaceItemProp> = (props) => {
                 footerClass="place-item__modal-actions"
                 footer={<Button onClick={closeMapHandler}>CLOSE</Button>}
             >
-                
+                <div className="map-container">
+                    <h2>THE MAP!</h2>
+                </div>
             </Modal>
             <li className="place-item">
                 <Card className="place-item__content">
@@ -48,7 +50,7 @@ const PlaceItem:React.FC<PlaceItemProp> = (props) => {
                     </div>
                     <div className="place-item__actions">
                         {/* Buttons to allow the user to interact with the 'Place' */}
-                        <Button inverse>VIEW ON MAP</Button>
+                        <Button inverse onClick={openMapHandler}>VIEW ON MAP</Button>
                         <Button to={`/places/${props.id}`}>EDIT</Button>
                         <Button danger>DELETE</Button>
                     </div>
