@@ -7,13 +7,13 @@ import './Modal.css'
 
 interface ModalProp {
     show: Boolean;
-    onCancel: () => void;
+    onCancel: () => any;
     // Following are for the ModalOverlay
     className?: String;
     style?: React.CSSProperties;
     headerClass?: String;
     header: String;
-    onSubmit : () => void;
+    onSubmit?: () => any;
     contentClass?: String;
     footerClass?: String;
     footer: any;
