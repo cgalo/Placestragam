@@ -29,8 +29,6 @@ const Map:React.FC<MapProp> = (props) => {
 
             new window.google.maps.Marker({position: myCenter, map: map})
         });
-        
-
     }, [props.coordinates, props.zoom])
 
     return (
@@ -41,7 +39,6 @@ const Map:React.FC<MapProp> = (props) => {
         >
         </div>
     );
-
 }
 
 export default Map;
