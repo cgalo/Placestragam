@@ -13,14 +13,14 @@ interface MapProp {
   
 const Map:React.FC<MapProp> = (props) => {
     const mapRef = useRef<any>();
-
-    const loader = new Loader({
-        apiKey: process.env.REACT_APP_GOOGLEMAPS_API_KEY || "",
-        version: "weekly"
-    });
     
     useEffect(() => {
+        const loader = new Loader({
+            apiKey: process.env.REACT_APP_GOOGLEMAPS_API_KEY || "",
+            version: "weekly"
+        });
         const myCenter = { lat : props.coordinates.latitude, lng : props.coordinates.longitude }
+        
         loader.load().then(() => {
             const map = new window.google.maps.Map(mapRef.current, {
                 center: myCenter,
