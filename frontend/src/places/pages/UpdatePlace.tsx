@@ -2,10 +2,10 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 
 import Input from '../../shared/components/FormElements/Input';
-import BUtton from '../../shared/components/FormElements/Button';
+import Button from '../../shared/components/FormElements/Button';
 import { VALIDATOR_REQUIRE, VALIDATOR_MINLENGTH } from '../../shared/util/validators';
 import { Place } from '../components/types';
-import Button from '../../shared/components/FormElements/Button';
+import './PlacesForm.css';
 
 interface ParamType {
     placeId: string;
@@ -54,7 +54,7 @@ const UpdatePlace: React.FC<{}> = (props) => {
         );
     }
     return (
-        <form>
+        <form className="place-form">
             <Input 
                 id="title"
                 element="text"

@@ -7,7 +7,7 @@ import {
     VALIDATOR_MINLENGTH, 
     VALIDATOR_REQUIRE 
 } from '../../shared/util/validators';
-import './NewPlaces.css';
+import './PlacesForm.css';
 interface NewPlacesProps {
 
 }
