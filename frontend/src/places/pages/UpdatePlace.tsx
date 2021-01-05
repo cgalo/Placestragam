@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 
 import Input from '../../shared/components/FormElements/Input';
 import Button from '../../shared/components/FormElements/Button';
+import Card from '../../shared/components/UIElements/Card';
+
 import { 
     VALIDATOR_REQUIRE, 
     VALIDATOR_MINLENGTH 
@@ -58,20 +60,22 @@ const UpdatePlace: React.FC<{}> = (props) => {
         }
     }, false);
 
-    const identifiedPlace = PLACES.find(p => p.id === placeId) || PLACES[0];
+    const identifiedPlace = PLACES.find(p => p.id === placeId);
 
 
     useEffect(() => {
-        setFormData({
-            title: {
-                value: identifiedPlace.title,
-                isValid: true
-            },
-            description: {
-                value: identifiedPlace?.description,
-                isValid: identifiedPlace?.title
-            }
-        }, true);
+        if (identifiedPlace) {
+            setFormData({
+                title: {
+                    value: identifiedPlace.title,
+                    isValid: true
+                },
+                description: {
+                    value: identifiedPlace?.description,
+                    isValid: identifiedPlace?.title
+                }
+            }, true);
+        }
         setIsLoading(false);
     }, [setFormData, identifiedPlace]);
 
@@ -83,9 +87,9 @@ const UpdatePlace: React.FC<{}> = (props) => {
     if (!identifiedPlace){
         return (
             <div className="center">
-                <h2>
-                    Could not find a place!
-                </h2>
+                <Card>
+                    <h2>Could not find place!</h2>
+                </Card>
             </div>
         );
     }
@@ -93,7 +97,9 @@ const UpdatePlace: React.FC<{}> = (props) => {
     if (isLoading) {
         return (
             <div className="center">
-                <h2>Loading...</h2>
+                <Card>
+                    <h2>Loading...</h2>
+                </Card>
             </div>
         );
     }
