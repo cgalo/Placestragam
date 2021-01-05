@@ -13,6 +13,8 @@ interface InputProp {
     element: String;
     placeholder?: String | string;
     rows?: Number | number;
+    value?: String | Number;
+    valid?: boolean;
 }
 
 const inputReducer = (state: any, action: any) => {
@@ -35,8 +37,8 @@ const inputReducer = (state: any, action: any) => {
 
 const Input:React.FC<InputProp> = (props) => {
     const [inputState, dispatch] = useReducer(inputReducer, {
-        value: '', 
-        isValid: false,
+        value: props.value || '', 
+        isValid: props.valid || false,
         isTouched: false
     });
 

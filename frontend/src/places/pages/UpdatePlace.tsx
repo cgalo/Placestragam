@@ -63,8 +63,8 @@ const UpdatePlace: React.FC<{}> = (props) => {
                 validators={[VALIDATOR_REQUIRE()]}
                 errorText="Please enter a valid title."
                 onInput={() => {}}
-                // value={identifiedPlace.title}
-                // valid={true}
+                value={identifiedPlace.title}
+                valid={true}
             />
 
             <Input 
@@ -75,8 +75,8 @@ const UpdatePlace: React.FC<{}> = (props) => {
                 validators={[VALIDATOR_MINLENGTH(5)]}
                 errorText="Please enter a valid description (min. 5 length)."
                 onInput={() => {}}
-                // value={identifiedPlace.description}
-                // valid={true}
+                value={identifiedPlace.description}
+                valid={true}
             />
             <Button type="submit" disabled={true}>
                 UPDATE PLACE
