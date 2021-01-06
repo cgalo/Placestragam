@@ -10,7 +10,7 @@ import {
 import { useForm } from '../../shared/hooks/form-hook';
 import './PlacesForm.css';
 
-const NewPlaces:React.FC<{}> = (props) => {
+const NewPlace:React.FC<{}> = (props) => {
 
     const [formState, inputHandler] =  useForm({
         title: {
@@ -71,4 +71,4 @@ const NewPlaces:React.FC<{}> = (props) => {
     );
 }
 
-export default NewPlaces;
+export default NewPlace;

@@ -4,7 +4,7 @@ import MainNavigation from './shared/components/Navigation/MainNavigation';
 
 // Pages
 import Users from './user/pages/Users';
-import NewPlaces from './places/pages/NewPlaces';
+import NewPlaces from './places/pages/NewPlace';
 import UserPlaces from './places/pages/UserPlaces';
 import UpdatePlace from './places/pages/UpdatePlace';
 import Auth from './user/pages/Auth';
