@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 
 import Input from '../../shared/components/FormElements/Input';
 import Button from '../../shared/components/FormElements/Button';
@@ -10,12 +10,13 @@ import {
     VALIDATOR_EMAIL,
     VALIDATOR_REQUIRE
 } from '../../shared/util/validators';
+import { AuthContext } from '../../shared/context/auth-context';
 import './Auth.css';
 
 const Auth: React.FC<{}> = (props) => {
-
-    const [isLoggingMode, setIsLoggingMode] = useState(true);
-    const [formState, inputHandler, setFormData] = useForm ({
+    const auth = useContext(AuthContext);                       // Check if a user is signed in
+    const [isLoggingMode, setIsLoggingMode] = useState(true);   // Keep track if the user is logging in or signing up
+    const [formState, inputHandler, setFormData] = useForm ({   // Keep track of the form state
         email: {
             value: '',
             isValid: false
@@ -54,9 +55,8 @@ const Auth: React.FC<{}> = (props) => {
 
     const formSubmitHandler = (event:React.FormEvent) => {
         event.preventDefault();
-        console.log("Submitting form...");
         console.log(formState.inputs);
-        
+        auth.login();                               // Login the user
     };
 
     return (
