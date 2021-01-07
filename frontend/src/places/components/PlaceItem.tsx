@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 
 import Card from '../../shared/components/UIElements/Card';
 import Button from '../../shared/components/FormElements/Button';
@@ -7,6 +7,7 @@ import Map from '../../shared/components/UIElements/Map';
 
 import './PlaceItem.css';
 import { Coordinates } from './types';
+import { AuthContext } from '../../shared/context/auth-context';
 
 interface PlaceItemProp {
     id: String;
@@ -19,6 +20,7 @@ interface PlaceItemProp {
 }
 
 const PlaceItem:React.FC<PlaceItemProp> = (props) => {
+    const auth = useContext(AuthContext);
 
     const [showMap, setShowMap] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -93,14 +95,22 @@ const PlaceItem:React.FC<PlaceItemProp> = (props) => {
                     </div>
                     <div className="place-item__actions">
                         {/* Buttons to allow the user to interact with the 'Place' */}
-                        <Button inverse onClick={openMapHandler}>VIEW ON MAP</Button>
-                        <Button to={`/places/${props.id}`}>EDIT</Button>
-                        <Button 
-                            danger
-                            onClick={showDeleteWarningHandler}
-                        >
-                            DELETE
+                        <Button inverse onClick={openMapHandler}>
+                            VIEW ON MAP
                         </Button>
+                        {auth.isLoggedIn && (
+                            <React.Fragment>
+                                <Button to={`/places/${props.id}`}>
+                                    EDIT
+                                </Button>
+                                <Button 
+                                    danger
+                                    onClick={showDeleteWarningHandler}
+                                >
+                                    DELETE
+                                </Button>
+                            </React.Fragment>
+                        )}
                     </div>
                 </Card>
             </li>
