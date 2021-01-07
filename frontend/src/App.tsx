@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import {BrowserRouter as Router, Route, Redirect, Switch} from 'react-router-dom';
+
 import MainNavigation from './shared/components/Navigation/MainNavigation';
 
 // Pages
@@ -15,7 +16,7 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   
   const login = useCallback(() => {
-    setIsLoggedIn(false);
+    setIsLoggedIn(true);
   }, []);
 
   const logout = useCallback(() => {
