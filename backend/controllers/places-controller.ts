@@ -54,7 +54,7 @@ function getPlacesById (req: Request, res: Response, next: Next) {
     res.json({place: place});
 }
 
-function getPlaceByUserId (req: Request, res: Response, next:Next) {
+function getPlaceByUserId (req: Request, res: Response, next: Next) {
     const userId = req.params.uId;
     const userPlace = DUMMY_PLACES.find(p => {
         return p.creator === userId;
@@ -70,4 +70,24 @@ function getPlaceByUserId (req: Request, res: Response, next:Next) {
     res.json({userPlace: userPlace});
 }
 
-export {getPlacesById, getPlaceByUserId};
+function createPlace(req: Request, res: Response, next: Next) {
+    const { title, description, coordinates, address, creator } = req.body;
+    const createdPlace:Place = {
+        id: 'p1',
+        description: description,
+        title: title,
+        location: coordinates,
+        address: address,
+        creator: creator
+    };
+
+    DUMMY_PLACES.push(createdPlace);
+
+    res.status(201).json({place: createdPlace});
+}
+
+export {
+    getPlacesById, 
+    getPlaceByUserId,
+    createPlace
+};

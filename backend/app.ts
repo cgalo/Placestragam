@@ -10,6 +10,8 @@ import HttpError from './models/http-error';
 
 const app = express();
 
+app.use(bodyParser.json());
+
 app.use('/api/places', placesRoute);
 
 app.use((error:HttpError, req:Request, res:Response, next:Next ) => {
