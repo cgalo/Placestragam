@@ -8,7 +8,7 @@ import * as placesController from '../controllers/places-controller';
 
 const route = express.Router();
 
-route.get('/:pId', placesController.getPlaceByUserId);
+route.get('/:pId', placesController.getPlacesById);
 
 route.get('/user/:uId', placesController.getPlaceByUserId);
 
