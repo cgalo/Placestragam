@@ -8,6 +8,7 @@ import {
     Response,
     NextFunction as Next
 } from 'express';
+import { v4 as uuidv4 } from 'uuid';
 
 import HttpError from '../models/http-error';
 import type { Place } from '../types/places-types';
@@ -73,7 +74,7 @@ function getPlaceByUserId (req: Request, res: Response, next: Next) {
 function createPlace(req: Request, res: Response, next: Next) {
     const { title, description, coordinates, address, creator } = req.body;
     const createdPlace:Place = {
-        id: 'p1',
+        id: uuidv4(),
         description: description,
         title: title,
         location: coordinates,
