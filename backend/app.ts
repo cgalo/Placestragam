@@ -16,7 +16,7 @@ app.use((error:HttpError, req:Request, res:Response, next:Next ) => {
     if (res.headersSent) {
         return next(error);
       }
-      res.status(error.getErrorCode() || 500)
+      res.status(error.errorCode || 500)
       res.json({message: error.message || 'An unknown error occurred!'});
 });
 

@@ -1,20 +1,21 @@
 class HttpError extends Error {
-    private errorCode: number;
+    private _errorCode: number;
 
     constructor(message: string, errorCode: number){
         super (message);
-        this.errorCode = errorCode;
+        this._errorCode = errorCode;
     }
 
-    public getErrorCode(){
-        return this.errorCode;
+    get errorCode():number{
+        return this._errorCode;
     }
 
-    public getMessage(){
+    get message():string{
         return this.message;
     }
-    public setErrorCode(errorCode:number){
-        this.errorCode = errorCode;
+
+    set errorCode(errorCode:number){
+        this._errorCode = errorCode;
     }
 }
 
