@@ -1,5 +1,7 @@
 import express from 'express';
 
+import HttpError from '../models/http-error';
+
 const route = express.Router();
 
 const DUMMY_PLACES = [
@@ -33,15 +35,31 @@ route.get('/:pId', (req, res, next) => {
     const place = DUMMY_PLACES.find(p => {
         return p.id === placeId;
     });
+
+    if (!place){
+        const message = "Could not find a place for the provided id.";
+        const errorCode = 404;
+        throw new HttpError(message, errorCode);
+    }
+
     console.log('GET request in Places');
     res.json({place: place});
 });
+
+
 
 route.get('/user/:uId', (req, res, next) => {
     const userId = req.params.uId;
     const userPlace = DUMMY_PLACES.find(p => {
         return p.creator === userId;
     });
+    
+    if (!userPlace){
+        const message = "Could not find a place for the provided user ID";
+        const errorCode = 404;
+        return next(new HttpError(message, errorCode));
+    }
+
     console.log('inside places/user/');
     res.json({userPlace: userPlace});
 });
