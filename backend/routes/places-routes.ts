@@ -8,10 +8,14 @@ import * as placesController from '../controllers/places-controller';
 
 const route = express.Router();
 
-route.get('/:pId', placesController.getPlacesById);
+route.get('/:pId', placesController.getPlaceById);
 
-route.get('/user/:uId', placesController.getPlaceByUserId);
+route.get('/user/:uId', placesController.getPlacesByUserId);
 
 route.post('/', placesController.createPlace);
+
+route.delete('/:pId', placesController.deletePlace);
+
+route.patch('/:pId', placesController.updatePlace);
 
 export = route;
