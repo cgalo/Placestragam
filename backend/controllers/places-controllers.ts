@@ -9,6 +9,7 @@ import {
     NextFunction as Next
 } from 'express';
 import { v4 as uuidv4 } from 'uuid';
+import { validationResult } from 'express-validator';
 
 import HttpError from '../models/http-error';
 import type { Place } from '../types/places-types';
@@ -71,6 +72,13 @@ function getPlacesByUserId (req: Request, res: Response, next: Next) {
 }
 
 function createPlace(req: Request, res: Response, next: Next) {
+    const errors = validationResult(req);           // Check error validation from express-validation
+    if (!errors.isEmpty()){
+        console.log(errors);
+        const message = "Invalid inputs passed, check data";
+        const errorCode = 422;
+        throw new HttpError(message, errorCode);
+    }
     const { title, description, coordinates, address, creator } = req.body;
     const createdPlace:Place = {
         id: uuidv4(),
@@ -87,6 +95,14 @@ function createPlace(req: Request, res: Response, next: Next) {
 }
 
 function updatePlace(req: Request, res:Response, next: Next) {
+    const errors = validationResult(req);               // Check error validation from express-validation
+    if (!errors.isEmpty()){
+        console.log(errors);
+        const message = "Invalid inputs passed, check data";
+        const errorCode = 422;
+        throw new HttpError(message, errorCode);
+    }
+
     const { title, description } = req.body;            // We only allow to edit title & description
     const placeId = req.params.pId;
 
