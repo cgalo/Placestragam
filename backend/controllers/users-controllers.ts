@@ -9,6 +9,7 @@ import {
     NextFunction as Next
 } from 'express';
 import { v4 as uuidv4 } from 'uuid';
+import { validationResult } from 'express-validator';
 
 import HttpError from '../models/http-error';
 import type { User } from '../types/users-types';
@@ -46,7 +47,7 @@ function createUser(req: Request, res: Response, next: Next) {
     const { 
         first_name, 
         last_name, 
-        public_profile, 
+        isPublic, 
         image, 
         email, 
         password 
@@ -65,7 +66,7 @@ function createUser(req: Request, res: Response, next: Next) {
         first_name: first_name,
         last_name: last_name,
         image: image,
-        isPublic: public_profile,
+        isPublic: isPublic,
         password: password,
         email: email
     };
