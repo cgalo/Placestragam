@@ -20,6 +20,7 @@ route.post('/signup',
         check('isPublic')
             .notEmpty(),
         check('email')
+            .normalizeEmail()
             .isEmail(),
         check('password')
             .isLength({min: 6}),
@@ -32,6 +33,7 @@ route.post('/signup',
 route.post('/login', 
     [
         check('email')
+            .normalizeEmail()
             .isEmail(),
         check('password')
             .isLength({min: 6})
