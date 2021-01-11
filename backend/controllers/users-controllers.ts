@@ -44,6 +44,14 @@ function getUsers(req: Request, res: Response, next: Next) {
 }
 
 function createUser(req: Request, res: Response, next: Next) {
+    const errors = validationResult(req);           // Check error validation from express-validation
+    if (!errors.isEmpty()){
+        console.log(errors);
+        const message = "Invalid inputs passed, check data";
+        const errorCode = 422;
+        throw new HttpError(message, errorCode);
+    }
+
     const { 
         first_name, 
         last_name, 
@@ -76,6 +84,14 @@ function createUser(req: Request, res: Response, next: Next) {
 }
 
 function loginUser(req: Request, res: Response, next: Next) {
+    const errors = validationResult(req);           // Check error validation from express-validation
+    if (!errors.isEmpty()){
+        console.log(errors);
+        const message = "Invalid inputs passed, check data";
+        const errorCode = 422;
+        throw new HttpError(message, errorCode);
+    }
+    
     const { email, password } = req.body;
     
     const identifiedUser = DUMMY_USERS.find(u => u.email === email);
