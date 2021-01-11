@@ -4,7 +4,7 @@
 
 import express, { Router } from 'express';
 
-import * as placesController from '../controllers/places-controller';
+import * as placesController from '../controllers/places-controllers.ts';
 
 const route = express.Router();
 
