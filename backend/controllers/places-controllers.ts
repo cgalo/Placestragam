@@ -122,6 +122,14 @@ function updatePlace(req: Request, res:Response, next: Next) {
 
 function deletePlace(req: Request, res:Response, next: Next) {
     const placeId = req.params.pId;
+    const foundPlace = DUMMY_PLACES.find(p => p.id === placeId);
+
+    if (!foundPlace){
+        const message = "Could not find place with given id";
+        const errorCode = 404;
+        throw new HttpError(message, errorCode);
+    }
+    
     DUMMY_PLACES = DUMMY_PLACES.filter(p => p.id !== placeId);
     res.status(200).json({message: "Deleted place"});
     
