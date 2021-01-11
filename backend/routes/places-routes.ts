@@ -2,11 +2,11 @@
  * Handles routing, mapping paths, http methods to controllers for places
 */
 
-import express, { Router } from 'express';
+import { Router } from 'express';
 
 import * as placesController from '../controllers/places-controllers';
 
-const route = express.Router();
+const route = Router();
 
 route.get('/:pId', placesController.getPlaceById);
 
