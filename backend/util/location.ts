@@ -4,10 +4,13 @@
 */
 
 import axios from 'axios';
+import * as dotenv from 'dotenv';
 
 import HttpError from '../models/http-error';
 import { Location } from '../types/places-types';
 import { GeoCodeResponsePayload } from '../types/util-types';
+
+dotenv.config();
 
 const API_KEY = process.env.GOOGLE_MAPS_API_KEY;
 
@@ -17,6 +20,7 @@ async function getCoordsForAddress(address:string) {
         ${encodeURI(address)}
         &key=${API_KEY}`
     );
+    
     const data:GeoCodeResponsePayload = response.data;
     
     if (!data || data.status === 'ZERO_RESULTS'){
@@ -26,12 +30,12 @@ async function getCoordsForAddress(address:string) {
         throw new HttpError(message, errorCode);
     }
 
-    const coordinates = data.results[0].geometry.location;  // Get coordinates from response
+    const {lat, lng} = data.results[0].geometry.location;  // Get coordinates from response
     const location:Location = {                             // Convert response to Location object
-        latitude: coordinates.lat(),
-        longitude: coordinates.lng()
+        latitude: Number(lat),
+        longitude: Number(lng)
     }
-
+    
     return location;                                        // Return final location object
 }
 

@@ -11,8 +11,9 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import { validationResult } from 'express-validator';
 
+import getCoordsForAddress from '../util/location';
 import HttpError from '../models/http-error';
-import type { Place } from '../types/places-types';
+import type { Place, Location } from '../types/places-types';
 
 let DUMMY_PLACES:Array<Place> = [
     // We'll be replaced when we link a DB
@@ -71,15 +72,25 @@ function getPlacesByUserId (req: Request, res: Response, next: Next) {
     res.status(200).json({userPlace: userPlaces});
 }
 
-function createPlace(req: Request, res: Response, next: Next) {
+async function createPlace(req: Request, res: Response, next: Next) {
     const errors = validationResult(req);           // Check error validation from express-validation
+    
     if (!errors.isEmpty()){
         console.log(errors);
         const message = "Invalid inputs passed, check data";
         const errorCode = 422;
-        throw new HttpError(message, errorCode);
+        return next(new HttpError(message, errorCode));
     }
-    const { title, description, coordinates, address, creator } = req.body;
+
+    const { title, description, address, creator } = req.body;
+
+    let coordinates:Location;
+    try {
+        coordinates = await getCoordsForAddress(address);    // Request location from address
+    } catch(error){
+        return next(error);
+    }
+    
     const createdPlace:Place = {
         id: uuidv4(),
         description: description,
