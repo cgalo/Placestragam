@@ -12,9 +12,6 @@ import HttpError from './models/http-error';
 
 dotenv.config();
 
-console.log(process.env.GOOGLE_MAPS_API_KEY);
-console.log(process.env.PORT);
-
 const app = express();
 
 app.use(bodyParser.json());
