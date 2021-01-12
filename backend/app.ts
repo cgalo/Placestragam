@@ -4,10 +4,16 @@ import express, {
     NextFunction as Next
 } from 'express';
 import bodyParser from 'body-parser';
+import * as dotenv from 'dotenv';
 
 import placesRoute from './routes/places-routes';
 import usersRoute from './routes/users-routes';
 import HttpError from './models/http-error';
+
+dotenv.config();
+
+console.log(process.env.GOOGLE_MAPS_API_KEY);
+console.log(process.env.PORT);
 
 const app = express();
 
@@ -30,4 +36,4 @@ app.use((error:HttpError, req:Request, res:Response, next:Next) => {
       res.json({message: error.message || 'An unknown error occurred!'});
 });
 
-app.listen('5000');
+app.listen(process.env.PORT);
