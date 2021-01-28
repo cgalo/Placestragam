@@ -10,10 +10,20 @@ import {
 } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { validationResult } from 'express-validator';
+import * as mongoose from 'mongoose';
 
-import getCoordsForAddress from '../util/location';
+// Models
 import HttpError from '../models/http-error';
+import PlaceModel from '../models/place';
+
+// Util function
+import getCoordsForAddress from '../util/location';
+
+// Interfaces
 import type { Place, Location } from '../types/places-types';
+import type { IPlaceSchema } from '../types/schema-types';
+import { create } from 'domain';
+
 
 let DUMMY_PLACES:Array<Place> = [
     // We'll be replaced when we link a DB
@@ -91,16 +101,28 @@ async function createPlace(req: Request, res: Response, next: Next) {
         return next(error);
     }
     
-    const createdPlace:Place = {
-        id: uuidv4(),
-        description: description,
+    // const createdPlace:Place = {
+    
+    // };
+
+    const createdPlace:IPlaceSchema = new PlaceModel({
         title: title,
+        description: description,
         location: coordinates,
         address: address,
-        creator: creator
-    };
+        creator: creator,
+        image: 
+        "https://www.metro.us/wp-content/uploads/2020/02/wall-street-582921_1280.jpg"
+    });
 
-    DUMMY_PLACES.push(createdPlace);
+    try {
+        await createdPlace.save();
+    } catch(err){
+        const message = "Could not insert place in DB";
+        const errorCode = 500;
+        const error = new HttpError(message, errorCode);
+        return next (error);
+    }
 
     res.status(201).json({place: createdPlace});
 }

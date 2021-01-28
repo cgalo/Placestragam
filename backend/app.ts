@@ -5,6 +5,7 @@ import express, {
 } from 'express';
 import bodyParser from 'body-parser';
 import * as dotenv from 'dotenv';
+import mongoose from 'mongoose';
 
 import placesRoute from './routes/places-routes';
 import usersRoute from './routes/users-routes';
@@ -33,4 +34,11 @@ app.use((error:HttpError, req:Request, res:Response, next:Next) => {
       res.json({message: error.message || 'An unknown error occurred!'});
 });
 
-app.listen(process.env.PORT);
+mongoose
+    .connect(process.env.MONGO_DB_URI || "")
+    .then(() => {
+        app.listen(process.env.PORT);
+    })
+    .catch(err => {
+        console.log(err);
+    });
