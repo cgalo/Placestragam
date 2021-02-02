@@ -22,7 +22,6 @@ import getCoordsForAddress from '../util/location';
 // Interfaces
 import type { Place, Location } from '../types/places-types';
 import type { IPlaceSchema } from '../types/schema-types';
-import { create } from 'domain';
 
 
 let DUMMY_PLACES:Array<Place> = [
@@ -100,10 +99,6 @@ async function createPlace(req: Request, res: Response, next: Next) {
     } catch(error){
         return next(error);
     }
-    
-    // const createdPlace:Place = {
-    
-    // };
 
     const createdPlace:IPlaceSchema = new PlaceModel({
         title: title,
@@ -116,7 +111,7 @@ async function createPlace(req: Request, res: Response, next: Next) {
     });
 
     try {
-        await createdPlace.save();
+        await createdPlace.save();      // Save is a mongoose function that handles saving data to MongoDB
     } catch(err){
         const message = "Could not insert place in DB";
         const errorCode = 500;
