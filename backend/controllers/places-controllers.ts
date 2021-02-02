@@ -50,35 +50,53 @@ let DUMMY_PLACES:Array<Place> = [
     }
 ];
 
-function getPlaceById (req: Request, res: Response, next: Next) {
+async function getPlaceById (req: Request, res: Response, next: Next) {
     const placeId = req.params.pId;
-    const place = DUMMY_PLACES.find(p => {
-        return p.id === placeId;
-    });
+
+    let place:IPlaceSchema;
+    try {
+        place = await PlaceModel.findById(placeId);     // Look for the place in the DB
+    } catch (err) {
+        const message = "Something went wrong, could not find a place.";
+        const errorCode = 500;
+        const error = new HttpError(message, errorCode);
+        return next(error);
+    }
 
     if (!place){
         const message = "Could not find a place for the provided id.";
         const errorCode = 404;
-        throw new HttpError(message, errorCode);
+        const error = new HttpError(message, errorCode);
+        return next(error);
     }
 
-    console.log('GET request in Places');
-    res.json({place: place});
+    res.json({place: place.toObject( { getters: true }) });  // To add ID property to mongoose
 }
 
-function getPlacesByUserId (req: Request, res: Response, next: Next) {
+    async function getPlacesByUserId (req: Request, res: Response, next: Next) {
     const userId = req.params.uId;
-    const userPlaces = DUMMY_PLACES.filter(p => {
-        return p.creator === userId;
-    });
     
+    let userPlaces: Array<IPlaceSchema>;
+
+    try {
+        userPlaces = await PlaceModel.find({creator: userId});      // Get all the places that match the creator value with the userID
+        
+    } catch(err){
+        const message = "Fetching places failed, please tray again";
+        const errorCode = 500;
+        const error = new HttpError(message, errorCode);
+        return next(error);
+    }
+
     if (!userPlaces || userPlaces.length === 0){
         const message = "Could not find a place for the provided user ID";
         const errorCode = 404;
         return next(new HttpError(message, errorCode));
     }
 
-    res.status(200).json({userPlace: userPlaces});
+    res.status(200).json({
+        places: userPlaces.map(place => place.toObject({getters: true}))    // To add attribute id and not _id
+    });
 }
 
 async function createPlace(req: Request, res: Response, next: Next) {
