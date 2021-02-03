@@ -106,7 +106,7 @@ async function createUser(req: Request, res: Response, next: Next) {
     res.status(201).json({user:createdUser.toObject({getters: true}) });
 }
 
-function loginUser(req: Request, res: Response, next: Next) {
+async function loginUser(req: Request, res: Response, next: Next) {
     const errors = validationResult(req);           // Check error validation from express-validation
     if (!errors.isEmpty()){
         console.log(errors);
@@ -116,12 +116,22 @@ function loginUser(req: Request, res: Response, next: Next) {
     }
     
     const { email, password } = req.body;
+
+    let existingUser:IUserSchema;
+    try {
+        existingUser = await UserModel.findOne({email: email});     // Look for user by the given email in the DB
+    } catch(err){
+        const message = "Loggin failed, please try again later";
+        const errorCode = 500;
+        const error =  new HttpError(message, errorCode);
+        return next(error);
+    }
     
-    const identifiedUser = DUMMY_USERS.find(u => u.email === email);
-    if (!identifiedUser || identifiedUser.password !== password){
-        const message = 'Email or password are incorrect';
+    if (!existingUser || existingUser.password !== password){
+        const message = 'Failed logging, email or password are incorrect';
         const errorCode = 401;
-        throw new HttpError(message, errorCode);
+        const error = new HttpError(message, errorCode);
+        return next(error);
     }
 
     res.status(200).json({message: "Logged in!"});
