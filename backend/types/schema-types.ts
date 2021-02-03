@@ -3,7 +3,7 @@
  */
 
 import { Document } from 'mongoose';
-import { Location } from './places-types';
+import type { Location } from './places-types';
 
 export interface IPlaceSchema extends Document {
     title: String;
@@ -12,4 +12,12 @@ export interface IPlaceSchema extends Document {
     address: String;
     location: Location;
     creator: String;
+}
+
+export interface IUserSchema extends Document {
+    first_name: String;
+    last_name: String;
+    email: String;
+    password: String;
+    places: Array<String>;
 }
