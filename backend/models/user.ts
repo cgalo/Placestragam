@@ -1,4 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
+import uniqueValidator from 'mongoose-unique-validator';
 
 import type { IUserSchema } from '../types/schema-types';
 
@@ -10,6 +11,8 @@ const UserSchema: Schema = new Schema({
     image:      { type: String, required: true },
     places:     { type: String, required: true }
 });
+
+UserSchema.plugin(uniqueValidator);     // Query email faster and makes sure that emails are unique
 
 const UserModel = mongoose.model<IUserSchema>('User', UserSchema);
 
