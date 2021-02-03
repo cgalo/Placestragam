@@ -40,9 +40,24 @@ const DUMMY_USERS:Array<User> = [
     }
 ];
 
-function getUsers(req: Request, res: Response, next: Next) {
-    const users = DUMMY_USERS.filter(u => (u.isPublic));
-    res.status(200).json({users: users});
+async function getUsers(req: Request, res: Response, next: Next) {
+    /**
+     *  Function looks up for all users in the DB and returns only the ones that are public
+     */
+    
+    let publicUsers: Array<IUserSchema>;
+    try {
+        // Fetch & save all public users with all their attributes except their passwords
+        publicUsers = await UserModel.find({isPublic: true}, '-password'); 
+    }catch(err){
+        const message = "Failed fetching users, please try again later";
+        const errorCode = 500;
+        const error =  new HttpError(message, errorCode);
+        return next(error);
+    }
+    // const publicUsers = users.filter(user => (user.isPublic));          // Only save public users
+    // const users = DUMMY_USERS.filter(u => (u.isPublic));
+    res.status(200).json({users: publicUsers.map(user => user.toObject({getters: true}) )});
 }
 
 async function createUser(req: Request, res: Response, next: Next) {
