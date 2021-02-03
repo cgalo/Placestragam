@@ -185,20 +185,30 @@ async function updatePlace(req: Request, res:Response, next: Next) {
     res.status(200).json({place: placeToUpdate.toObject({getters: true}) });
 }
 
-function deletePlace(req: Request, res:Response, next: Next) {
+async function deletePlace(req: Request, res:Response, next: Next) {
     const placeId = req.params.pId;
-    const foundPlace = DUMMY_PLACES.find(p => p.id === placeId);
 
-    if (!foundPlace){
-        const message = "Could not find place with given id";
-        const errorCode = 404;
-        throw new HttpError(message, errorCode);
+    let placeToDelete: IPlaceSchema;                        // The place we are attempting to delete
+    try {
+        placeToDelete = await PlaceModel.findById(placeId); // Fetch the place from the DB w/ the given place ID
+    } catch (err){
+        const message = "Something went wrong, could not delete place";
+        const errorCode = 500;
+        const error = new HttpError(message, errorCode);
+        return next(error);
+    }
+
+    try {
+        await placeToDelete.remove();                             // Delete place from DB
+    } catch (err) {
+        const message = "Something went wrong, could not delete place";
+        const errorCode = 500;
+        const error = new HttpError(message, errorCode);
+        return next(error);
     }
     
-    DUMMY_PLACES = DUMMY_PLACES.filter(p => p.id !== placeId);
-    res.status(200).json({message: "Deleted place"});
-    
 
+    res.status(200).json({message: "Deleted place"});
 }
 
 export {
