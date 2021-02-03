@@ -176,7 +176,7 @@ async function updatePlace(req: Request, res:Response, next: Next) {
     try {
         await placeToUpdate.save();                     // Save the changes to the place object in the DB
     } catch(err) {
-        const message = "";
+        const message = "Something went wrong, could not update place";
         const errorCode = 500;
         const error = new HttpError(message, errorCode);
         return next(error);
