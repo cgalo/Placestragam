@@ -140,7 +140,7 @@ async function createPlace(req: Request, res: Response, next: Next) {
     res.status(201).json({place: createdPlace});
 }
 
-function updatePlace(req: Request, res:Response, next: Next) {
+async function updatePlace(req: Request, res:Response, next: Next) {
     const errors = validationResult(req);               // Check error validation from express-validation
     if (!errors.isEmpty()){
         console.log(errors);
@@ -152,18 +152,37 @@ function updatePlace(req: Request, res:Response, next: Next) {
     const { title, description } = req.body;            // We only allow to edit title & description
     const placeId = req.params.pId;
 
-    const updatedPlace = {...DUMMY_PLACES.find(p => p.id === placeId)};
-    if (!updatedPlace){
+    let placeToUpdate: IPlaceSchema;                    // Place object that we'll fetch and then update values
+    try {
+        placeToUpdate = await PlaceModel.findById(placeId);     // Look for place with the given ID in the DB
+    } catch (err){
+        const message = "Something went wrong, could not update place.";
+        const errorCode = 500;
+        const error = new HttpError(message, errorCode);
+        return next(error);
+    }
+
+    if (!placeToUpdate){
         // If the place doesn't exist for some reason
         const message = "Could not find a place for the provided id.";
         const errorCode = 404;
         throw new HttpError(message, errorCode);
     }
 
-    const placeIdx = DUMMY_PLACES.findIndex(p => p.id === placeId);
-    updatedPlace.title = title;
-    updatedPlace.description = description;
-    res.status(200).json({place: updatedPlace});
+    placeToUpdate.title = title;                        // Set the new title of the place
+    placeToUpdate.description = description;            // Set the new description of the place
+
+    // Now we update the place in the DB
+    try {
+        await placeToUpdate.save();                     // Save the changes to the place object in the DB
+    } catch(err) {
+        const message = "";
+        const errorCode = 500;
+        const error = new HttpError(message, errorCode);
+        return next(error);
+    }
+
+    res.status(200).json({place: placeToUpdate.toObject({getters: true}) });
 }
 
 function deletePlace(req: Request, res:Response, next: Next) {
