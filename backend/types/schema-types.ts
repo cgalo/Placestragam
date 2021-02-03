@@ -20,4 +20,5 @@ export interface IUserSchema extends Document {
     email: String;
     password: String;
     places: Array<String>;
+    isPublic: Boolean;
 }
