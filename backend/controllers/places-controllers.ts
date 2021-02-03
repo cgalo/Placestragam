@@ -82,7 +82,7 @@ async function getPlaceById (req: Request, res: Response, next: Next) {
         userPlaces = await PlaceModel.find({creator: userId});      // Get all the places that match the creator value with the userID
         
     } catch(err){
-        const message = "Fetching places failed, please tray again";
+        const message = "Fetching places failed, please try again later";
         const errorCode = 500;
         const error = new HttpError(message, errorCode);
         return next(error);
