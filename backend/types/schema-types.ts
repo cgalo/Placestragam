@@ -2,7 +2,7 @@
  * Schema interfaces utilized for Mongoose in the models directory
  */
 
-import { Document } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 import type { Location } from './places-types';
 
 export interface IPlaceSchema extends Document {
@@ -11,7 +11,7 @@ export interface IPlaceSchema extends Document {
     image: String;
     address: String;
     location: Location;
-    creator: String;
+    creator: mongoose.Types.ObjectId;
 }
 
 export interface IUserSchema extends Document {
@@ -19,6 +19,6 @@ export interface IUserSchema extends Document {
     last_name: String;
     email: String;
     password: String;
-    places: String;
+    places: Array<mongoose.Types.ObjectId>;
     isPublic: Boolean;
 }
