@@ -77,7 +77,6 @@ async function createUser(req: Request, res: Response, next: Next) {
         image, 
         email, 
         password,
-        places
     } = req.body;
 
     let existingUser;               // Will use this to check if the user/email already exists in the DB
@@ -106,7 +105,7 @@ async function createUser(req: Request, res: Response, next: Next) {
         password: password,
         image: image,
         isPublic: isPublic,
-        places: places
+        places: []
     });
 
     try {
