@@ -20,6 +20,8 @@ route.post('/',
     check('description')
         .isLength({min: 5}),
     check('address')
+        .notEmpty(),
+    check('creator')
         .notEmpty()
 ],
     placesController.createPlace

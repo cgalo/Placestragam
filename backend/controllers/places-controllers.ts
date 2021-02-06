@@ -10,18 +10,19 @@ import {
 } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { validationResult } from 'express-validator';
-import * as mongoose from 'mongoose';
+import mongoose from 'mongoose';
 
 // Models
 import HttpError from '../models/http-error';
 import PlaceModel from '../models/place';
+import UserModel from '../models/user';
 
 // Util function
 import getCoordsForAddress from '../util/location';
 
 // Interfaces
 import type { Place, Location } from '../types/places-types';
-import type { IPlaceSchema } from '../types/schema-types';
+import type { IPlaceSchema, IUserSchema } from '../types/schema-types';
 
 
 let DUMMY_PLACES:Array<Place> = [
@@ -73,7 +74,7 @@ async function getPlaceById (req: Request, res: Response, next: Next) {
     res.json({place: place.toObject( { getters: true }) });  // To add ID property to mongoose
 }
 
-    async function getPlacesByUserId (req: Request, res: Response, next: Next) {
+async function getPlacesByUserId (req: Request, res: Response, next: Next) {
     const userId = req.params.uId;
     
     let userPlaces: Array<IPlaceSchema>;
@@ -128,8 +129,36 @@ async function createPlace(req: Request, res: Response, next: Next) {
         "https://www.metro.us/wp-content/uploads/2020/02/wall-street-582921_1280.jpg"
     });
 
+    let user:IUserSchema;                           // User that will 'own' this place
     try {
-        await createdPlace.save();      // Save is a mongoose function that handles saving data to MongoDB
+        user = await UserModel.findById(creator);   // Fetch user from the DB 
+    } catch (err) {
+        const message = "Creating place failed, please try again";
+        const errorCode =  500;
+        const error = new HttpError(message, errorCode);
+        return next(error);
+    }
+
+    if (!user){
+        // If the user dooesn't exist in the DB, throw error
+        const message = "Could not find user for the provided id";
+        const errorCode = 404;
+        const error =  new HttpError(message, errorCode);
+        return next(error);
+    }
+
+    console.log(user);
+    console.log(createdPlace);
+
+
+    try {
+        const session = await mongoose.startSession();      // Initiated new session
+        session.startTransaction();
+        await createdPlace.save({ session: session });      // Store the newly created place
+        user.places.push(createdPlace.id);                  // Add the new place's ID to the user's places list
+        await user.save({session: session});                // Save the changes to the user
+        await session.commitTransaction();                  // Send all the transactions & end the session
+
     } catch(err){
         const message = "Could not insert place in DB";
         const errorCode = 500;
@@ -175,7 +204,7 @@ async function updatePlace(req: Request, res:Response, next: Next) {
     // Now we update the place in the DB
     try {
         await placeToUpdate.save();                     // Save the changes to the place object in the DB
-    } catch(err) {
+    } catch(esrr) {
         const message = "Something went wrong, could not update place";
         const errorCode = 500;
         const error = new HttpError(message, errorCode);
