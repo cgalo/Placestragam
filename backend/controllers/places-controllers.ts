@@ -50,27 +50,28 @@ async function getPlaceById (req: Request, res: Response, next: Next) {
 
 async function getPlacesByUserId (req: Request, res: Response, next: Next) {
     const userId = req.params.uId;
-    
-    let userPlaces: Array<IPlaceSchema>;
+
+    let userWithPlaces: IUserSchema;
 
     try {
-        userPlaces = await PlaceModel.find({creator: userId});      // Get all the places that match the creator value with the userID
-        
-    } catch(err){
+        // Get the user with it's repective places object from the DB
+        userWithPlaces = await UserModel.findById(userId).populate('places');
+    } catch (err){
         const message = "Fetching places failed, please try again later";
         const errorCode = 500;
         const error = new HttpError(message, errorCode);
         return next(error);
     }
 
-    if (!userPlaces || userPlaces.length === 0){
+    console.log(userWithPlaces);
+    if (!userWithPlaces || userWithPlaces.places.length === 0){
         const message = "Could not find a place for the provided user ID";
         const errorCode = 404;
         return next(new HttpError(message, errorCode));
     }
 
     res.status(200).json({
-        places: userPlaces.map(place => place.toObject({getters: true}))    // To add attribute id and not _id
+        places: userWithPlaces.places.map(place => place.toObject({getters: true}))    // To add attribute id and not _id
     });
 }
 
