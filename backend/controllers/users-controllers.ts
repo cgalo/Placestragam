@@ -8,48 +8,40 @@ import {
     Response,
     NextFunction as Next
 } from 'express';
-import { v4 as uuidv4 } from 'uuid';
 import { validationResult } from 'express-validator';
 
 import HttpError from '../models/http-error';
-import type { User } from '../types/users-types';
+import UserModel from '../models/user';
+import type { IUserSchema } from '../types/schema-types';
 
-const DUMMY_USERS:Array<User> = [
-    // We'll be replaced when we link a DB
-    {
-        id: 'u1',
-        email: "ckasdmc@somethign.com",
-        password: "yourMom",
-        first_name: 'John',
-        last_name:'Smith',
-        isPublic: true,
-        image: 
-        'https://s4.anilist.co/file/anilistcdn/character/large/n127595-IOMRQyMSypre.png'
-    },
-    {
-        id: 'u2',
-        email: "ckasdmc@somethign.com",
-        password: "yourMom",
-        first_name: 'Carlos',
-        last_name:'Galo',
-        isPublic: true,
-        image: 
-        'https://s4.anilist.co/file/anilistcdn/character/large/b127222-IY5iDRuXLY8i.png'
+
+async function getUsers(req: Request, res: Response, next: Next) {
+    /**
+     *  Function looks up for all users in the DB and returns only the ones that are public
+     */
+    
+    let publicUsers: Array<IUserSchema>;
+    try {
+        // Fetch & save all public users with all their attributes except their passwords
+        publicUsers = await UserModel.find({isPublic: true}, '-password'); 
+    }catch(err){
+        const message = "Failed fetching users, please try again later";
+        const errorCode = 500;
+        const error =  new HttpError(message, errorCode);
+        return next(error);
     }
-];
-
-function getUsers(req: Request, res: Response, next: Next) {
-    const users = DUMMY_USERS.filter(u => (u.isPublic));
-    res.status(200).json({users: users});
+    
+    res.status(200).json({users: publicUsers.map(user => user.toObject({getters: true}) )});
 }
 
-function createUser(req: Request, res: Response, next: Next) {
+async function createUser(req: Request, res: Response, next: Next) {
     const errors = validationResult(req);           // Check error validation from express-validation
     if (!errors.isEmpty()){
         console.log(errors);
         const message = "Invalid inputs passed, check data";
         const errorCode = 422;
-        throw new HttpError(message, errorCode);
+        const error = new HttpError(message, errorCode);
+        return next(error);
     }
 
     const { 
@@ -58,32 +50,51 @@ function createUser(req: Request, res: Response, next: Next) {
         isPublic, 
         image, 
         email, 
-        password 
+        password,
     } = req.body;
 
-    const isUser = DUMMY_USERS.find(u => u.email === email);    // Check if user exists
-    if (isUser) {
-        // If user exists already
-        const message = "Email is already in use";
-        const errorCode = 422;
-        throw new HttpError(message, errorCode);
+    let existingUser;               // Will use this to check if the user/email already exists in the DB
+    try {
+        existingUser = await UserModel.findOne({email: email});     // Lookup email in the DB
+    } catch{
+        const message = "Creating user failed, please try again later.";
+        const errorCode = 500;
+        const error = new HttpError(message, errorCode);
+        return next(error);
     }
 
-    const createdUser:User = {
-        id: uuidv4(),
+    if (existingUser) {
+        // If user exists already
+        const message = "User exists already, please login instead.";
+        const errorCode = 422;
+        const error = new HttpError(message, errorCode);
+        return next(error);
+    }
+
+    // Create the new user object
+    const createdUser:IUserSchema = new UserModel({
         first_name: first_name,
         last_name: last_name,
+        email: email,
+        password: password,
         image: image,
         isPublic: isPublic,
-        password: password,
-        email: email
-    };
+        places: []
+    });
 
-    DUMMY_USERS.push(createdUser);
-    res.status(201).json({user:createdUser});
+    try {
+        await createdUser.save();               // Save the user into the DB
+    } catch (err) {
+        const message = "Creating user failed, please try again later.";
+        const errorCode = 500;
+        const error = new HttpError(message, errorCode);
+        return next(error);
+    }
+    
+    res.status(201).json({user:createdUser.toObject({getters: true}) });
 }
 
-function loginUser(req: Request, res: Response, next: Next) {
+async function loginUser(req: Request, res: Response, next: Next) {
     const errors = validationResult(req);           // Check error validation from express-validation
     if (!errors.isEmpty()){
         console.log(errors);
@@ -93,16 +104,25 @@ function loginUser(req: Request, res: Response, next: Next) {
     }
     
     const { email, password } = req.body;
+
+    let existingUser:IUserSchema;
+    try {
+        existingUser = await UserModel.findOne({email: email});     // Look for user by the given email in the DB
+    } catch(err){
+        const message = "Loggin failed, please try again later";
+        const errorCode = 500;
+        const error =  new HttpError(message, errorCode);
+        return next(error);
+    }
     
-    const identifiedUser = DUMMY_USERS.find(u => u.email === email);
-    if (!identifiedUser || identifiedUser.password !== password){
-        const message = 'Email or password are incorrect';
+    if (!existingUser || existingUser.password !== password){
+        const message = 'Failed logging, email or password are incorrect';
         const errorCode = 401;
-        throw new HttpError(message, errorCode);
+        const error = new HttpError(message, errorCode);
+        return next(error);
     }
 
     res.status(200).json({message: "Logged in!"});
-
 }
 
 export {
