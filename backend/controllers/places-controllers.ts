@@ -25,32 +25,6 @@ import type { Place, Location } from '../types/places-types';
 import type { IPlaceSchema, IUserSchema } from '../types/schema-types';
 
 
-let DUMMY_PLACES:Array<Place> = [
-    // We'll be replaced when we link a DB
-    {
-        id: 'p1',
-        title: 'Empire State Building',
-        description: 'One of the tallest buildings in NYC',
-        location: {
-            latitude: 40.74844,
-            longitude: -73.98715
-        },
-        address: '20 W 34th St, New York, NY 10001',
-        creator: 'u1'
-    },
-    {
-        id: 'p2',
-        title: 'Coca Cola Rotulo',
-        description: 'Rotulo de Coca-Cola en la montaña Merendon',
-        location: {
-            latitude: 15.5083608,
-            longitude: -88.0608642
-        },
-        address: '21104, Honduras',
-        creator: 'u1'
-    }
-];
-
 async function getPlaceById (req: Request, res: Response, next: Next) {
     const placeId = req.params.pId;
 
@@ -215,11 +189,17 @@ async function updatePlace(req: Request, res:Response, next: Next) {
 }
 
 async function deletePlace(req: Request, res:Response, next: Next) {
-    const placeId = req.params.pId;
+    /**
+     * Look for the place object with the placeID, given in the request.
+     * Then we need to get the user that 'owns' the place that is going to be deleted in the DB
+     */
 
-    let placeToDelete: IPlaceSchema;                        // The place we are attempting to delete
+    const placeId = req.params.pId;                         // Get the placeID from the request
+
+    let placeToDelete:IPlaceSchema;                        // The place we are attempting to delete
     try {
-        placeToDelete = await PlaceModel.findById(placeId); // Fetch the place from the DB w/ the given place ID
+        // Fetch the place from the DB w/ the given place ID, and find the user that owns the place
+        placeToDelete = await PlaceModel.findById(placeId).populate('creator'); // Get the place and populate the creator
     } catch (err){
         const message = "Something went wrong, could not delete place";
         const errorCode = 500;
@@ -227,8 +207,17 @@ async function deletePlace(req: Request, res:Response, next: Next) {
         return next(error);
     }
 
+    if (!placeToDelete || !placeToDelete.creator){                                    // If no place was found throw error
+        return next(new HttpError("Could not find a place or creator for the given ID", 404));
+    }
+
     try {
-        await placeToDelete.remove();                             // Delete place from DB
+        const session = await mongoose.startSession();
+        session.startTransaction();
+        await placeToDelete.remove({session: session});         // Delete place from DB
+        placeToDelete.creator.places.pull(placeToDelete);       // Delete the place from the creator/user
+        await placeToDelete.creator.save({session: session});   // Save the creator 
+        await session.commitTransaction();                      // Complete the transaction
     } catch (err) {
         const message = "Something went wrong, could not delete place";
         const errorCode = 500;

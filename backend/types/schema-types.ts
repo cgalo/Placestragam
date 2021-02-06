@@ -11,7 +11,7 @@ export interface IPlaceSchema extends Document {
     image: String;
     address: String;
     location: Location;
-    creator: mongoose.Types.ObjectId;
+    creator: IUserSchema['id'];
 }
 
 export interface IUserSchema extends Document {
@@ -19,6 +19,6 @@ export interface IUserSchema extends Document {
     last_name: String;
     email: String;
     password: String;
-    places: Array<mongoose.Types.ObjectId>;
+    places: Array<IPlaceSchema['id']>;
     isPublic: Boolean;
 }
