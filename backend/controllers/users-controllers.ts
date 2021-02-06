@@ -8,37 +8,12 @@ import {
     Response,
     NextFunction as Next
 } from 'express';
-import { v4 as uuidv4 } from 'uuid';
 import { validationResult } from 'express-validator';
 
 import HttpError from '../models/http-error';
 import UserModel from '../models/user';
-import type { User } from '../types/users-types';
 import type { IUserSchema } from '../types/schema-types';
 
-const DUMMY_USERS:Array<User> = [
-    // We'll be replaced when we link a DB
-    {
-        id: 'u1',
-        email: "ckasdmc@somethign.com",
-        password: "yourMom",
-        first_name: 'John',
-        last_name:'Smith',
-        isPublic: true,
-        image: 
-        'https://s4.anilist.co/file/anilistcdn/character/large/n127595-IOMRQyMSypre.png'
-    },
-    {
-        id: 'u2',
-        email: "ckasdmc@somethign.com",
-        password: "yourMom",
-        first_name: 'Carlos',
-        last_name:'Galo',
-        isPublic: true,
-        image: 
-        'https://s4.anilist.co/file/anilistcdn/character/large/b127222-IY5iDRuXLY8i.png'
-    }
-];
 
 async function getUsers(req: Request, res: Response, next: Next) {
     /**
@@ -55,8 +30,7 @@ async function getUsers(req: Request, res: Response, next: Next) {
         const error =  new HttpError(message, errorCode);
         return next(error);
     }
-    // const publicUsers = users.filter(user => (user.isPublic));          // Only save public users
-    // const users = DUMMY_USERS.filter(u => (u.isPublic));
+    
     res.status(200).json({users: publicUsers.map(user => user.toObject({getters: true}) )});
 }
 
@@ -109,7 +83,7 @@ async function createUser(req: Request, res: Response, next: Next) {
     });
 
     try {
-        await createdUser.save();           // Save the user into the DB
+        await createdUser.save();               // Save the user into the DB
     } catch (err) {
         const message = "Creating user failed, please try again later.";
         const errorCode = 500;
@@ -149,7 +123,6 @@ async function loginUser(req: Request, res: Response, next: Next) {
     }
 
     res.status(200).json({message: "Logged in!"});
-
 }
 
 export {

@@ -8,7 +8,6 @@ import {
     Response,
     NextFunction as Next
 } from 'express';
-import { v4 as uuidv4 } from 'uuid';
 import { validationResult } from 'express-validator';
 import mongoose from 'mongoose';
 
@@ -21,7 +20,7 @@ import UserModel from '../models/user';
 import getCoordsForAddress from '../util/location';
 
 // Interfaces
-import type { Place, Location } from '../types/places-types';
+import type { Location } from '../types/util-types';
 import type { IPlaceSchema, IUserSchema } from '../types/schema-types';
 
 
@@ -30,7 +29,7 @@ async function getPlaceById (req: Request, res: Response, next: Next) {
 
     let place:IPlaceSchema;
     try {
-        place = await PlaceModel.findById(placeId);     // Look for the place in the DB
+        place = await PlaceModel.findById(placeId);         // Look for the place in the DB
     } catch (err) {
         const message = "Something went wrong, could not find a place.";
         const errorCode = 500;
@@ -145,7 +144,7 @@ async function createPlace(req: Request, res: Response, next: Next) {
 }
 
 async function updatePlace(req: Request, res:Response, next: Next) {
-    const errors = validationResult(req);               // Check error validation from express-validation
+    const errors = validationResult(req);                       // Check error validation from express-validation
     if (!errors.isEmpty()){
         console.log(errors);
         const message = "Invalid inputs passed, check data";
@@ -153,10 +152,10 @@ async function updatePlace(req: Request, res:Response, next: Next) {
         throw new HttpError(message, errorCode);
     }
 
-    const { title, description } = req.body;            // We only allow to edit title & description
+    const { title, description } = req.body;                    // We only allow to edit title & description
     const placeId = req.params.pId;
 
-    let placeToUpdate: IPlaceSchema;                    // Place object that we'll fetch and then update values
+    let placeToUpdate: IPlaceSchema;                            // Place object that we'll fetch and then update values
     try {
         placeToUpdate = await PlaceModel.findById(placeId);     // Look for place with the given ID in the DB
     } catch (err){
@@ -197,7 +196,7 @@ async function deletePlace(req: Request, res:Response, next: Next) {
 
     const placeId = req.params.pId;                         // Get the placeID from the request
 
-    let placeToDelete:IPlaceSchema;                        // The place we are attempting to delete
+    let placeToDelete:IPlaceSchema;                         // The place we are attempting to delete
     try {
         // Fetch the place from the DB w/ the given place ID, and find the user that owns the place
         placeToDelete = await PlaceModel.findById(placeId).populate('creator'); // Get the place and populate the creator
@@ -225,7 +224,6 @@ async function deletePlace(req: Request, res:Response, next: Next) {
         const error = new HttpError(message, errorCode);
         return next(error);
     }
-    
 
     res.status(200).json({message: "Deleted place"});
 }
