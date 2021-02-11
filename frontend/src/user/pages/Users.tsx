@@ -4,7 +4,7 @@ import UserList from '../components/UserList';
 import ErrorModal from '../../shared/components/UIElements/ErrorModal';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import type { IUser as User } from '../../types/user-types';
-import type { IGetUserResponse as Response} from '../../types/api-types';
+import type { IGetResponse as Response } from '../../types/api-types';
 
 const emptyUsers: User[] = [];
 
@@ -18,9 +18,10 @@ const Users: React.FC<{}> = () => {
             setIsLoading(true);
             try {
                 const response = await fetch('http://localhost:5000/api/users');
-                const responseData:Response = await response.json();
-                
-                if (response.ok && responseData){
+                const responseData:Response<User> = await response.json();
+                console.log(responseData);
+
+                if (response.ok && responseData.users){
                     setLoadedUsers(responseData.users);                    
                 } else{
                     throw new Error(responseData.message);
@@ -31,7 +32,6 @@ const Users: React.FC<{}> = () => {
             setIsLoading(false);
         }
         sendRequest();
-        console.log(loadedUsers);
     }, []);
 
     const errorHandler = () => {
@@ -46,7 +46,7 @@ const Users: React.FC<{}> = () => {
                     <LoadingSpinner asOverlay={false} />
                 </div>
             }
-            {!isLoading && (loadedUsers.length > 0) && <UserList items={loadedUsers}/>}
+            {!isLoading && (loadedUsers) && <UserList items={loadedUsers}/>}
         </React.Fragment>
     );
 }
