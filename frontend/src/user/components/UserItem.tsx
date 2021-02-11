@@ -7,8 +7,8 @@ import './UserItem.css';
 
 interface UserItemProps {
     id: any;
-    image: String;
-    name: String;
+    image: string;
+    name: string;
     placeCount: number;
 }
 

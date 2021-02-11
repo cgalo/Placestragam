@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from  'react';
 import { Loader } from "@googlemaps/js-api-loader"
 
 import './Map.css';
-import { Coordinates } from '../../../places/components/types';
+import { Coordinates } from '../../../types/places-types';
 
 interface MapProp {
     coordinates: Coordinates;

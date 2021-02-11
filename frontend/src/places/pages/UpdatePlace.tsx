@@ -10,7 +10,7 @@ import {
     VALIDATOR_MINLENGTH 
 } from '../../shared/util/validators';
 import { useForm } from '../../shared/hooks/form-hook';
-import { Place } from '../components/types';
+import { Place } from '../../types/places-types';
 import './PlacesForm.css';
 
 interface ParamType {

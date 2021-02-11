@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 
 import PlaceList from '../components/PlaceList';
 
-import { Place } from '../components/types';
+import { Place } from '../../types/places-types';
 
 const PLACES:Array<Place> = [
     {

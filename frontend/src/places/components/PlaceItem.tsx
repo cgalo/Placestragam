@@ -6,13 +6,13 @@ import Modal from '../../shared/components/UIElements/Modal';
 import Map from '../../shared/components/UIElements/Map';
 
 import './PlaceItem.css';
-import { Coordinates } from './types';
+import { Coordinates } from '../../types/places-types';
 import { AuthContext } from '../../shared/context/auth-context';
 
 interface PlaceItemProp {
     id: String;
-    image: String;
-    title: String;
+    image: string;
+    title: string;
     description: String;
     address: String;
     creatorId: String;
@@ -86,7 +86,7 @@ const PlaceItem:React.FC<PlaceItemProp> = (props) => {
             <li className="place-item">
                 <Card className="place-item__content">
                     <div className="place-item__image">
-                        <img src={props.image.valueOf()} alt={props.title.valueOf()} />                
+                        <img src={props.image} alt={props.title} />                
                     </div>
                     <div className="place-item__info">
                         <h2>{props.title}</h2>

@@ -5,7 +5,7 @@ import PlaceItem from './PlaceItem';
 import Button from '../../shared/components/FormElements/Button';
 
 import './PlaceList.css';
-import { Place } from './types';
+import { Place } from '../../types/places-types';
 
 interface PlaceListProp {
     items: Array<Place>;

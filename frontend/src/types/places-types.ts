@@ -2,8 +2,8 @@
 
 export interface Place {
     id: String;
-    imageUrl: String;
-    title: String;
+    imageUrl: string;
+    title: string;
     description: String;
     address: String;
     creator: String;
