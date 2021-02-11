@@ -4,11 +4,8 @@ import UserList from '../components/UserList';
 import ErrorModal from '../../shared/components/UIElements/ErrorModal';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import type { IUser as User } from '../../types/user-types';
+import type { IGetUserResponse as Response} from '../../types/api-types';
 
-interface IUserResponse {
-    users: User[];
-    message?: string;
-}
 const emptyUsers: User[] = [];
 
 const Users: React.FC<{}> = () => {
@@ -21,26 +18,26 @@ const Users: React.FC<{}> = () => {
             setIsLoading(true);
             try {
                 const response = await fetch('http://localhost:5000/api/users');
-                const responseData:IUserResponse = await response.json();
+                const responseData:Response = await response.json();
+                
                 if (response.ok && responseData){
-                    console.log(responseData);
-                    setLoadedUsers(responseData.users);
-                    console.log(loadedUsers);
+                    setLoadedUsers(responseData.users);                    
                 } else{
                     throw new Error(responseData.message);
                 }
-                
             } catch(err){
                 setError(err.message);
             }
             setIsLoading(false);
         }
         sendRequest();
+        console.log(loadedUsers);
     }, []);
 
     const errorHandler = () => {
-        setError('');
+        setError('');   // Clear error message
     }
+
     return (
         <React.Fragment>
             <ErrorModal error={error} onClear={errorHandler} /> 
