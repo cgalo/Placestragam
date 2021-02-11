@@ -58,45 +58,74 @@ const Auth: React.FC<{}> = (props) => {
         setIsLoginMode(prevMode => !prevMode);    // Flip the mode
     }
 
-    const formSubmitHandler = async (event:React.FormEvent) => {
-        event.preventDefault();
-
-        if (isLoginMode) {
-        } else {
-          try {
-            setIsLoading(true);     // Set loading state to true as we are about to perform a request
-            const response = await fetch('http://localhost:5000/api/users/signup', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                first_name: formState.inputs.first_name.value,
-                last_name: formState.inputs.last_name.value,
-                email: formState.inputs.email.value,
-                password: formState.inputs.password.value,
-                isPublic: true,
-                image: 
-                "https://c4.wallpaperflare.com/wallpaper/1012/53/295/monogatari-series-hachikuji-mayoi-anime-girls-twintails-wallpaper-thumb.jpg"
-              })
+    const loginRequest = async () => {
+        // Called when user tries to login
+        try {
+            const response = await fetch('http://localhost:5000/api/users/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: formState.inputs.email.value,
+                    password: formState.inputs.password.value
+                })
             });
-    
             const responseData = await response.json();
-            // console.log(responseData);
             if (response.ok){
                 auth.login();       // Set the user as logged in 
             }
             else {
-                console.log("Else we got an error here boiii")
                 throw new Error(responseData.message);
             }
-            
-          } catch (err) {
+        } 
+        catch (err) {
             console.log(err);
             setError(err.message || "Something went wrong, please try again.");
-          }
-          setIsLoading(false);
         }
+    }
+
+    const signupRequest = async() => {
+        // Called when a user is trying to create an account
+        try {
+            const response = await fetch('http://localhost:5000/api/users/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    first_name: formState.inputs.first_name.value,
+                    last_name: formState.inputs.last_name.value,
+                    email: formState.inputs.email.value,
+                    password: formState.inputs.password.value,
+                    isPublic: true,
+                    image: 
+                    "https://c4.wallpaperflare.com/wallpaper/1012/53/295/monogatari-series-hachikuji-mayoi-anime-girls-twintails-wallpaper-thumb.jpg"
+                })
+            });
+            const responseData = await response.json();
+            if (response.ok){
+                auth.login();       // Set the user as logged in 
+            }
+            else {
+                throw new Error(responseData.message);
+            }
+        } 
+        catch (err) {
+            setError(err.message || "Something went wrong, please try again.");
+        }
+    }
+
+    const formSubmitHandler = async (event:React.FormEvent) => {
+        event.preventDefault();
+        setIsLoading(true);     // Set loading state to true as we are about to perform a request
+        if (isLoginMode) {
+            loginRequest();
+        } 
+        else {
+            signupRequest();
+        }
+        setIsLoading(false);  
     };
 
     const errorHandler = ():void => {
