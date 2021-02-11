@@ -7,7 +7,7 @@ import axios from 'axios';
 import * as dotenv from 'dotenv';
 
 import HttpError from '../models/http-error';
-import { Location } from '../types/places-types';
+import { Location } from '../types/util-types';
 import { GeoCodeResponsePayload } from '../types/util-types';
 
 dotenv.config();
