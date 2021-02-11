@@ -17,7 +17,7 @@ import './Auth.css';
 
 const Auth: React.FC<{}> = (props) => {
     const auth = useContext(AuthContext);                       // Check if a user is signed in
-    const [isLoggingMode, setIsLoggingMode] = useState(true);   // Keep track if the user is logging in or signing up
+    const [isLoginMode, setIsLoginMode] = useState(true);   // Keep track if the user is logging in or signing up
     const [isLoading, setIsLoading] = useState(false);          // This will change when we do requests
     const [error, setError] = useState("");              // This will change if we get an error
 
@@ -34,7 +34,7 @@ const Auth: React.FC<{}> = (props) => {
 
     const switchModeHandler = () => {
         // Switch between logging and signup mode
-        if (!isLoggingMode) {
+        if (!isLoginMode) {
             // If we are in signup mode
             setFormData({
                 ...formState.inputs,
@@ -55,13 +55,13 @@ const Auth: React.FC<{}> = (props) => {
                 }
             }, false);
         }
-        setIsLoggingMode(prevMode => !prevMode);    // Flip the mode
+        setIsLoginMode(prevMode => !prevMode);    // Flip the mode
     }
 
     const formSubmitHandler = async (event:React.FormEvent) => {
         event.preventDefault();
 
-        if (isLoggingMode) {
+        if (isLoginMode) {
         } else {
           try {
             setIsLoading(true);     // Set loading state to true as we are about to perform a request
@@ -111,7 +111,7 @@ const Auth: React.FC<{}> = (props) => {
                 <h2>Login Required</h2>
                 <hr />
                 <form className="" onSubmit={formSubmitHandler}>
-                    {!isLoggingMode && (
+                    {!isLoginMode && (
                         <React.Fragment>
                             <Input 
                                 id="first_name"
@@ -153,11 +153,11 @@ const Auth: React.FC<{}> = (props) => {
                         errorText="Please enter a password with at least 6 characters."
                     />
                     <Button type="submit" disabled={!formState.isValid}>
-                        {isLoggingMode ? 'LOGIN' : 'SIGNUP'}
+                        {isLoginMode ? 'LOGIN' : 'SIGNUP'}
                     </Button>
                 </form>
                 <Button inverse onClick={switchModeHandler}>
-                SWITCH TO {isLoggingMode ? 'SIGNUP' : 'LOGIN'}
+                SWITCH TO {isLoginMode ? 'SIGNUP' : 'LOGIN'}
                 </Button>
             </Card>
         </React.Fragment>
