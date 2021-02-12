@@ -7,6 +7,7 @@ import ErrorModal from '../../shared/components/UIElements/ErrorModal';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 
 import { useForm } from '../../shared/hooks/form-hook';
+import { useHttpClient } from '../../shared/hooks/http-hook';
 import { 
     VALIDATOR_MINLENGTH,
     VALIDATOR_EMAIL,
@@ -14,14 +15,14 @@ import {
 } from '../../shared/util/validators';
 import { AuthContext } from '../../shared/context/auth-context';
 import './Auth.css';
+import { IUser } from '../../types/user-types';
 
 const Auth: React.FC<{}> = (props) => {
-    const auth = useContext(AuthContext);                       // Check if a user is signed in
-    const [isLoginMode, setIsLoginMode] = useState(true);   // Keep track if the user is logging in or signing up
-    const [isLoading, setIsLoading] = useState(false);          // This will change when we do requests
-    const [error, setError] = useState("");              // This will change if we get an error
+    const auth = useContext(AuthContext);                                   // Check if a user is signed in
+    const [isLoginMode, setIsLoginMode] = useState(true);                   // Keep track if the user is logging in or signing up
+    const { isLoading, error, sendRequest, clearError} = useHttpClient();   // To handle http request & error handlding
 
-    const [formState, inputHandler, setFormData] = useForm ({   // Keep track of the form state
+    const [formState, inputHandler, setFormData] = useForm ({               // Keep track of the form state
         email: {
             value: '',
             isValid: false
@@ -58,83 +59,67 @@ const Auth: React.FC<{}> = (props) => {
         setIsLoginMode(prevMode => !prevMode);    // Flip the mode
     }
 
-    const loginRequest = async () => {
-        // Called when user tries to login
+    const loginRequest = async () => {      // Called when a user is attempting to login
+    
+        // Setup the information needed to make the request for the httpCliet.sendRequest()
+        const headers =  { 'Content-Type': 'application/json' };
+        const method = 'POST';
+        const body = JSON.stringify({
+            email: formState.inputs.email.value,
+            password: formState.inputs.password.value
+        });
+        const url = 'http://localhost:5000/api/users/login';
+
         try {
-            const response = await fetch('http://localhost:5000/api/users/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    email: formState.inputs.email.value,
-                    password: formState.inputs.password.value
-                })
-            });
-            const responseData = await response.json();
-            if (response.ok){
-                auth.login();       // Set the user as logged in 
-            }
-            else {
-                throw new Error(responseData.message);
-            }
-        } 
-        catch (err) {
+            const response = await sendRequest(url, method, body, headers);  // Send the request to the backend
+            console.log(response);
+            auth.login();                                   // We login the user if we pass from the await for now
+        }
+        catch(err){
+            // The error state is handled inside the useHttpClient hook, therefore we can just log it
             console.log(err);
-            setError(err.message || "Something went wrong, please try again.");
         }
     }
 
-    const signupRequest = async() => {
-        // Called when a user is trying to create an account
+    const signupRequest = async() => {  // Called when a user is trying to create an account
+        const headers = { 'Content-Type': 'application/json' };
+        const method = 'POST';
+        const body = JSON.stringify({
+            first_name: formState.inputs.first_name.value,
+            last_name:  formState.inputs.last_name.value,
+            email:      formState.inputs.email.value,
+            password:   formState.inputs.password.value,
+            isPublic:   true,
+            image: 
+                "https://s4.anilist.co/file/anilistcdn/user/avatar/large/b459761-7VN7G9wf2mfN.jpg"
+        })
+        const url = 'http://localhost:5000/api/users/signup';
         try {
-            const response = await fetch('http://localhost:5000/api/users/signup', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    first_name: formState.inputs.first_name.value,
-                    last_name: formState.inputs.last_name.value,
-                    email: formState.inputs.email.value,
-                    password: formState.inputs.password.value,
-                    isPublic: true,
-                    image: 
-                    "https://c4.wallpaperflare.com/wallpaper/1012/53/295/monogatari-series-hachikuji-mayoi-anime-girls-twintails-wallpaper-thumb.jpg"
-                })
-            });
-            const responseData = await response.json();
-            if (response.ok){
-                auth.login();       // Set the user as logged in 
-            }
-            else {
-                throw new Error(responseData.message);
-            }
-        } 
+            const responseData = await sendRequest<IUser>(url, method, body, headers);
+            console.log(responseData);
+            auth.login();
+        }
         catch (err) {
-            setError(err.message || "Something went wrong, please try again.");
+            // The error state is handled inside the useHttpClient hook, therefore we can just log it
+            console.log(err); 
         }
     }
 
     const formSubmitHandler = async (event:React.FormEvent) => {
         event.preventDefault();
-        setIsLoading(true);     // Set loading state to true as we are about to perform a request
         if (isLoginMode) {
+            // User is attempting to login
             loginRequest();
         } 
         else {
+            // User is attempting to signup
             signupRequest();
         }
-        setIsLoading(false);  
     };
-
-    const errorHandler = ():void => {
-        setError('');
-    }
 
     return (
         <React.Fragment>
-            <ErrorModal error={error} onClear={errorHandler} />
+            <ErrorModal error={error} onClear={clearError} />
             <Card className="authentication">
                 {isLoading && <LoadingSpinner asOverlay />}
                 <h2>Login Required</h2>

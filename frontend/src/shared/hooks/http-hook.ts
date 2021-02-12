@@ -10,13 +10,13 @@ import type {
 } from '../../types/api-types';
 
 const emptyHttpReqAborts:Array<AbortController> = []
-const useHttpClient = () => {
+export const useHttpClient = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
     const activeHttpRequest = useRef(emptyHttpReqAborts);
 
     const sendRequest = useCallback(
-        async<T>(url: string, method: 'GET', body:null, headers:{}) => {
+        async<T>(url: string, method:string, body:string, headers:{}) => {
             setIsLoading(true);
             const httpAbortCtrl = new AbortController();
             activeHttpRequest.current.push(httpAbortCtrl);
@@ -27,17 +27,25 @@ const useHttpClient = () => {
                 headers: headers,
                 signal: httpAbortCtrl.signal
             });
+
             const responseData:IGetResponse<T> = await response.json();
+
+            // Now we want to filter out the specific control for this specific request
+            activeHttpRequest.current = activeHttpRequest.current.filter(
+                // Keep all requests controllers except the one we just got the data
+                reqCtrl => reqCtrl !== httpAbortCtrl
+            );
 
             if (!response.ok){
                 throw new Error(responseData.message);    
             }
-
+            setIsLoading(false);
             return responseData;
         } catch(err) {
             setErrorMsg(err.message);
+            setIsLoading(false);
+            throw err;
         }
-        setIsLoading(false);
     },[]);
     
     const clearError = () => {
@@ -51,7 +59,5 @@ const useHttpClient = () => {
         };
     }, []);
 
-    return { isLoading: isLoading, error: errorMsg, sendRequest: sendRequest}
+    return { isLoading: isLoading, error: errorMsg, sendRequest: sendRequest, clearError: clearError}
 };
-
-export default useHttpClient;
