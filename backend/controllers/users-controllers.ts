@@ -122,7 +122,7 @@ async function loginUser(req: Request, res: Response, next: Next) {
         return next(error);
     }
 
-    res.status(200).json({message: "Logged in!"});
+    res.status(200).json({message: "Logged in!", user: existingUser.toObject( {getters: true}) });
 }
 
 export {

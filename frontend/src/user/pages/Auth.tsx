@@ -71,9 +71,11 @@ const Auth: React.FC<{}> = (props) => {
         const url = 'http://localhost:5000/api/users/login';
 
         try {
-            const response = await sendRequest(url, method, body, headers);  // Send the request to the backend
-            console.log(response);
-            auth.login();                                   // We login the user if we pass from the await for now
+            const response = await sendRequest<IUser>(url, method, body, headers);  // Send the request to the backend
+            const user = response.user;
+            if (user){
+                auth.login(user.id);
+            }
         }
         catch(err){
             // The error state is handled inside the useHttpClient hook, therefore we can just log it
@@ -95,9 +97,11 @@ const Auth: React.FC<{}> = (props) => {
         })
         const url = 'http://localhost:5000/api/users/signup';
         try {
-            const responseData = await sendRequest<IUser>(url, method, body, headers);
-            console.log(responseData);
-            auth.login();
+            const responseData = await sendRequest(url, method, body, headers);
+            const user = responseData.user;
+            if (user){
+                auth.login(user.id);
+            }
         }
         catch (err) {
             // The error state is handled inside the useHttpClient hook, therefore we can just log it
