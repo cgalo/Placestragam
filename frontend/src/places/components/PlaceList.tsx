@@ -5,7 +5,7 @@ import PlaceItem from './PlaceItem';
 import Button from '../../shared/components/FormElements/Button';
 
 import './PlaceList.css';
-import { Place } from '../../types/places-types';
+import type { Place } from '../../types/places-types';
 
 interface PlaceListProp {
     items: Array<Place>;
@@ -28,9 +28,9 @@ const PlaceList:React.FC<PlaceListProp> = (props) => {
         <ul className="place-list">
             {props.items.map(place => (
                 <PlaceItem 
-                    key={place.id.valueOf()} 
+                    key={place.id} 
                     id={place.id}
-                    image={place.imageUrl}
+                    image={place.image}
                     title={place.title}
                     description={place.description}
                     address={place.address}
