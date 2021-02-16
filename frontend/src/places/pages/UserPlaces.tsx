@@ -34,8 +34,12 @@ const UserPlaces:React.FC<{}> = (props) => {
     return (
         <React.Fragment>
             <ErrorModal error={error} onClear={clearError} />
-            { isLoading && <LoadingSpinner asOverlay />}
-            {! isLoading &&  <PlaceList items={loadedPlaces} />}
+            { isLoading && (
+                <div className="center">
+                    <LoadingSpinner asOverlay />
+                </div>
+            )}
+            {!isLoading &&  <PlaceList items={loadedPlaces} />}
         </React.Fragment>
     );
 }
