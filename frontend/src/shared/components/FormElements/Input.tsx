@@ -75,7 +75,7 @@ const Input:React.FC<InputProp> = (props) => {
     ) : (
         <textarea 
             placeholder={props.placeholder}
-            id={props.id.valueOf()} 
+            id={props.id} 
             rows={props.rows || 3}
             onChange={changeHandler}
             value={inputState.value}

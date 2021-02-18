@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 
 // Components
@@ -15,19 +15,22 @@ import {
     VALIDATOR_REQUIRE, 
     VALIDATOR_MINLENGTH 
 } from '../../shared/util/validators';
+import { AuthContext } from '../../shared/context/auth-context';
 import type { Place } from '../../types/places-types';
 import './PlacesForm.css';
 
 interface ParamType {
     placeId: string;
-    userId: string;
 }
 
 const UpdatePlace: React.FC<{}> = (props) => {
+    const auth = useContext(AuthContext);
     const { placeId } = useParams<ParamType>();
-    const [identifiedPlace, setIdentifiedPlace] = useState({} as Place);
+    const [loadedPlace, setLoadedPlace] = useState({} as Place);
+    const [isPlaceLoaded, setIsPlaceLoaded] = useState(false);      // Keep track if we finished fetching the place
     const { isLoading, error, sendRequest, clearError } = useHttpClient();
     const history = useHistory();                   // Will assist in redirecting the user
+
     const [formState, inputHandler, setFormData] = useForm ({
         title: {
             value: '',
@@ -45,75 +48,89 @@ const UpdatePlace: React.FC<{}> = (props) => {
             try {
                 const method = 'GET', url = `http://localhost:5000/api/places/${placeId}`;
                 const responseData = await sendRequest(url, method, null, {});
-                const place:Place = responseData.place || {} as Place;
+                const place = responseData.place;
                 if (place){
-                    setIdentifiedPlace(place);
+                    setLoadedPlace(place);
+                    setIsPlaceLoaded(true);
+                    setFormData({
+                        title: {
+                            value: place.title,
+                            isValid: true
+                        },
+                        description: {
+                            value: place.description,
+                            isValid: true
+                        }
+                    }, true);
                 }
             }
             catch(err){}
         }
-
-        fetchPlace();
-
-        if (identifiedPlace) {
-            setFormData({
-                title: {
-                    value: identifiedPlace.title,
-                    isValid: true
-                },
-                description: {
-                    value: identifiedPlace.description,
-                    isValid: identifiedPlace.title
-                }
-            }, true);
-        }
-    }, [setFormData]);
+        fetchPlace();   // Get the place data from the backend and set the form values
+    }, [sendRequest, placeId, setFormData]);
 
     const updatePlace = async() => {
         try {
             // Variables/data needed to perform the request
             const method = 'PATCH', url = `http://localhost:5000/api/places/${placeId}`;
             const body = JSON.stringify({
-                title: (formState.inputs.title.value === "") ? identifiedPlace.title : formState.inputs.title.value,
+                title:  formState.inputs.title.value,
                 description: formState.inputs.description.value
             });
             const header = {'Content-Type' : 'application/json'};
             
             // Now we can perform the PATCH request
             const responseData = await sendRequest<Place>(url, method, body, header);
-            const updatedPlace:Place = responseData.place || {} as Place;
+            const updatedPlace = responseData.place;
             
             // If we got the updated place object from the backend
             if (updatedPlace){
-                history.push('/');
+                history.push('/' + auth.userId + '/places');
             }
-        } catch{
+        } catch (err) {
             // Nothing to do here, the ErrorModal & useHttpClient hooks already handle the errors
         }
-    }
+    };
 
     const formSubmitHandler = (event: React.FormEvent) => {
         event.preventDefault();
-        updatePlace();
+        updatePlace();          // Send the changes of the 'place' to the backend
+    };
+
+    const isThereAChange = ():boolean => {
+        // Check if the 'place' from the backend has different title/description compared to the one in the form
+        if (loadedPlace.title === formState.inputs.title.value 
+            && loadedPlace.description === formState.inputs.description.value ){
+                // If the title & description of the 'place' have not been changed in the form
+                return false;
+            }
+        else {
+            // The form has at least one value different than the loadedPlace's title/description
+            return true;
+        }
     }
 
     return (
         <React.Fragment>
             <ErrorModal error={error} onClear={clearError}/>
-            {isLoading && (<div className="center">
-                <LoadingSpinner asOverlay/>
-            </div>)}
 
-            {!isLoading && !identifiedPlace && (
+            {isLoading && (
                 <div className="center">
-                    <Card><h2>Could not find place!</h2></Card>
+                    <LoadingSpinner asOverlay={false} />
                 </div>
             )}
 
-            {!isLoading && identifiedPlace && (
+            {!isLoading && !error && !isPlaceLoaded && (
+                <div className="center">
+                    <Card>
+                        <h2>Could not find place!</h2>
+                    </Card>
+                </div>
+            )}
+
+            {!isLoading && !error && isPlaceLoaded && (
                 <form className="place-form" onSubmit={formSubmitHandler}>
                     <Input 
-                        placeholder={identifiedPlace.title}
                         id="title"
                         element="input"
                         type="text"
@@ -121,11 +138,10 @@ const UpdatePlace: React.FC<{}> = (props) => {
                         validators={[VALIDATOR_REQUIRE()]}
                         errorText="Please enter a valid title."
                         onInput={inputHandler}
-                        initValue={formState.inputs.title.value}
-                        initValid={formState.inputs.title.isValid}
+                        initValue={loadedPlace.title}
+                        initValid={true}
                     />
                     <Input 
-                        placeholder="New description here..."
                         id="description"
                         element="textarea"
                         type="textarea"
@@ -133,10 +149,10 @@ const UpdatePlace: React.FC<{}> = (props) => {
                         validators={[VALIDATOR_MINLENGTH(5)]}
                         errorText="Please enter a valid description (min. 5 length)."
                         onInput={inputHandler}
-                        initValue={formState.inputs.description.value}
-                        initValid={formState.inputs.description.isValid}
+                        initValue={loadedPlace.description}
+                        initValid={true}
                     />
-                    <Button type="submit" disabled={!formState.isValid}>
+                    <Button type="submit" disabled={!isThereAChange()}>
                         UPDATE PLACE
                     </Button>
                 </form>
