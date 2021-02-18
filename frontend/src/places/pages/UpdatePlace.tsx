@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 
 // Components
@@ -15,7 +15,6 @@ import {
     VALIDATOR_REQUIRE, 
     VALIDATOR_MINLENGTH 
 } from '../../shared/util/validators';
-import { AuthContext } from '../../shared/context/auth-context';
 import type { Place } from '../../types/places-types';
 import './PlacesForm.css';
 
@@ -29,7 +28,6 @@ const UpdatePlace: React.FC<{}> = (props) => {
     const [identifiedPlace, setIdentifiedPlace] = useState({} as Place);
     const { isLoading, error, sendRequest, clearError } = useHttpClient();
     const history = useHistory();                   // Will assist in redirecting the user
-    const { userId } = useContext(AuthContext);    // Listener to context, contains userId
     const [formState, inputHandler, setFormData] = useForm ({
         title: {
             value: '',
