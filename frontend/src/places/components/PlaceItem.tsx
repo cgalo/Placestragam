@@ -1,27 +1,33 @@
 import React, { useState, useContext } from 'react';
+import { useHistory } from 'react-router-dom';
 
 import Card from '../../shared/components/UIElements/Card';
 import Button from '../../shared/components/FormElements/Button';
 import Modal from '../../shared/components/UIElements/Modal';
 import Map from '../../shared/components/UIElements/Map';
+import ErrorModal from '../../shared/components/UIElements/ErrorModal';
+import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 
-import './PlaceItem.css';
-import { Coordinates } from '../../types/places-types';
+import { useHttpClient } from '../../shared/hooks/http-hook';
 import { AuthContext } from '../../shared/context/auth-context';
+import type { Coordinates } from '../../types/places-types';
+import './PlaceItem.css';
 
 interface PlaceItemProp {
-    id: String;
+    id: string;
     image: string;
     title: string;
-    description: String;
-    address: String;
-    creatorId: String;
+    description: string;
+    address: string;
+    creatorId: string;
     coordinates: Coordinates;
+    onDeletePlace: (pId: string) => void;
 }
 
 const PlaceItem:React.FC<PlaceItemProp> = (props) => {
     const auth = useContext(AuthContext);
-
+    const history = useHistory();
+    const { isLoading, error, sendRequest, clearError } = useHttpClient();
     const [showMap, setShowMap] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
 
@@ -37,13 +43,23 @@ const PlaceItem:React.FC<PlaceItemProp> = (props) => {
         setShowConfirmModal(false);
     };
 
-    const confirmDeleteHandler = () => {
+    const confirmDeleteHandler = async() => {
         setShowConfirmModal(false);
         console.log("Deleting place...");
+        // Send delete request to the backend, as user confirmed to delete the place
+        try {
+            const method='DELETE', url="http://localhost:5000/api/places/" + props.id;
+            const responseData = await sendRequest(url, method, null, {});
+            console.log(responseData.message);
+            props.onDeletePlace(props.id);
+        } catch(err){
+            // useHttpClient and ErrorModal are already handling the errors, nothing to do here
+        }
     }
 
     return (
         <React.Fragment>
+            <ErrorModal error={error} onClear={clearError}/>
             <Modal 
                 onCancel={closeMapHandler} 
                 show={showMap}
@@ -80,11 +96,12 @@ const PlaceItem:React.FC<PlaceItemProp> = (props) => {
             >
                 <p>
                     Do you want to proceed and delete this place? 
-                    Please note that this can be undone thereafter.
+                    Please note that this can't be undone thereafter.
                 </p>
             </Modal>
             <li className="place-item">
                 <Card className="place-item__content">
+                    {isLoading && <LoadingSpinner asOverlay />}
                     <div className="place-item__image">
                         <img src={props.image} alt={props.title} />                
                     </div>

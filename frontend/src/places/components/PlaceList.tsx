@@ -9,9 +9,11 @@ import type { Place } from '../../types/places-types';
 
 interface PlaceListProp {
     items: Array<Place>;
+    onDeletePlace: (pId:string) => void;
 }
 
 const PlaceList:React.FC<PlaceListProp> = (props) => {
+
     if (props.items.length === 0) {
         return (
         <div className="place-list center">
@@ -36,6 +38,7 @@ const PlaceList:React.FC<PlaceListProp> = (props) => {
                     address={place.address}
                     creatorId={place.creator}
                     coordinates={place.location}
+                    onDeletePlace={props.onDeletePlace}
                 />
             ))}
         </ul>

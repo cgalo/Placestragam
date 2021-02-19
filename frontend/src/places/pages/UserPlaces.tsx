@@ -10,7 +10,7 @@ import { useHttpClient } from '../../shared/hooks/http-hook';
 const emptyPlaces:Array<Place> = [];
 const UserPlaces:React.FC<{}> = (props) => {
     const [loadedPlaces, setLoadedPlaces] = useState(emptyPlaces);
-    const { isLoading, error, sendRequest, clearError  } = useHttpClient();
+    const { isLoading, error, sendRequest, clearError } = useHttpClient();
     const userId:string = useParams<any>().userId;     // Get the user id of the current user
 
     useEffect(() => {
@@ -30,6 +30,13 @@ const UserPlaces:React.FC<{}> = (props) => {
         fetchPlaces();
     }, [sendRequest, userId]);
 
+    const placeDeleteHandler = (deletePlaceId: string):void => {
+        // Filter the place that was just removed, the DB will already have the place deleted(in PlaceItem page)
+        setLoadedPlaces(prevPlaces => 
+            prevPlaces.filter(place => place.id !== deletePlaceId)
+        ); 
+    }
+
     
     return (
         <React.Fragment>
@@ -39,7 +46,12 @@ const UserPlaces:React.FC<{}> = (props) => {
                     <LoadingSpinner asOverlay />
                 </div>
             )}
-            {!isLoading &&  <PlaceList items={loadedPlaces} />}
+            {!isLoading &&  
+                <PlaceList 
+                    items={loadedPlaces} 
+                    onDeletePlace={placeDeleteHandler}
+                />
+            }
         </React.Fragment>
     );
 }
