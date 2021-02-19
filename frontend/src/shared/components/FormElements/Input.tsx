@@ -46,7 +46,7 @@ const Input:React.FC<InputProp> = (props) => {
     const { value, isValid } = inputState;
 
     useEffect(() => {
-        props.onInput(props.id, inputState.value, inputState.isValid)
+        onInput(id, value, isValid)
     }, [id, value, isValid, onInput]);
 
     const changeHandler = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>)  => {

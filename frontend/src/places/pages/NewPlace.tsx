@@ -48,6 +48,7 @@ const NewPlace:React.FC<{}> = (props) => {
             const header = {'Content-Type' : 'application/json'};
 
             const responseData = await sendRequest(url, method, body, header);
+            console.log(responseData);
             // Now we redirect the user to a different page -> New place page
             history.push('/');      // Redirects to the home page
         }

@@ -22,13 +22,14 @@ const UserPlaces:React.FC<{}> = (props) => {
                 const places:Array<Place> = responseData.places || [];
                 setLoadedPlaces(places);
                 console.log(responseData);
-            } catch(err){
-                console.log(error);
+            } 
+            catch(err){
+                // Eror is handled with ErrorModal & useHttpClient
             }
         }
 
         fetchPlaces();
-    }, [sendRequest, userId]);
+    }, [sendRequest, userId, error]);
 
     const placeDeleteHandler = (deletePlaceId: string):void => {
         // Filter the place that was just removed, the DB will already have the place deleted(in PlaceItem page)
@@ -36,7 +37,6 @@ const UserPlaces:React.FC<{}> = (props) => {
             prevPlaces.filter(place => place.id !== deletePlaceId)
         ); 
     }
-
     
     return (
         <React.Fragment>

@@ -5,7 +5,6 @@ import ErrorModal from '../../shared/components/UIElements/ErrorModal';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import { useHttpClient } from '../../shared/hooks/http-hook';
 import type { IUser as User } from '../../types/user-types';
-import type { IGetResponse as Response } from '../../types/api-types';
 
 const emptyUsers: User[] = [];
 
@@ -26,7 +25,7 @@ const Users: React.FC<{}> = () => {
             }
         }
         getUsers();
-    }, []);
+    }, [sendRequest]);
 
     return (
         <React.Fragment>

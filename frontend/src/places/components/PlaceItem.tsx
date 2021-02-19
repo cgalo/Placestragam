@@ -1,5 +1,4 @@
 import React, { useState, useContext } from 'react';
-import { useHistory } from 'react-router-dom';
 
 import Card from '../../shared/components/UIElements/Card';
 import Button from '../../shared/components/FormElements/Button';
@@ -26,7 +25,6 @@ interface PlaceItemProp {
 
 const PlaceItem:React.FC<PlaceItemProp> = (props) => {
     const auth = useContext(AuthContext);
-    const history = useHistory();
     const { isLoading, error, sendRequest, clearError } = useHttpClient();
     const [showMap, setShowMap] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -50,8 +48,8 @@ const PlaceItem:React.FC<PlaceItemProp> = (props) => {
         try {
             const method='DELETE', url="http://localhost:5000/api/places/" + props.id;
             const responseData = await sendRequest(url, method, null, {});
-            console.log(responseData.message);
-            props.onDeletePlace(props.id);
+            props.onDeletePlace(props.id);          // Readjust the places list in UserPlaces
+            console.log(responseData);
         } catch(err){
             // useHttpClient and ErrorModal are already handling the errors, nothing to do here
         }
@@ -115,7 +113,7 @@ const PlaceItem:React.FC<PlaceItemProp> = (props) => {
                         <Button inverse onClick={openMapHandler}>
                             VIEW ON MAP
                         </Button>
-                        {auth.isLoggedIn && (
+                        {auth.isLoggedIn && auth.userId === props.id && (
                             <React.Fragment>
                                 <Button to={`/places/${props.id}`}>
                                     EDIT
