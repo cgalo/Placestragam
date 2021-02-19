@@ -59,9 +59,9 @@ const Map:React.FC<MapProp> = (props) => {
 
             {!isLoading && isMarkerDone && (
                 <div 
-                ref={mapRef}
-                className={`map ${props.className}`} 
-                style={props.style}
+                    ref={mapRef}
+                    className={`map ${props.className}`} 
+                    style={props.style}
                 >
                 </div>
             )}
