@@ -19,9 +19,10 @@ const UserPlaces:React.FC<{}> = (props) => {
                 const method = 'GET', url = `http://localhost:5000/api/places/user/${userId}`;
                 console.log(url);
                 const responseData = await sendRequest<Place>(url, method, null, {});
-                const places:Array<Place> = responseData.places || [];
-                setLoadedPlaces(places);
-                console.log(responseData);
+                const places = responseData.places;
+                if (places){
+                    setLoadedPlaces(places);
+                }
             } 
             catch(err){
                 // Eror is handled with ErrorModal & useHttpClient
@@ -29,7 +30,7 @@ const UserPlaces:React.FC<{}> = (props) => {
         }
 
         fetchPlaces();
-    }, [sendRequest, userId, error]);
+    }, [sendRequest, userId]);
 
     const placeDeleteHandler = (deletePlaceId: string):void => {
         // Filter the place that was just removed, the DB will already have the place deleted(in PlaceItem page)
@@ -43,7 +44,7 @@ const UserPlaces:React.FC<{}> = (props) => {
             <ErrorModal error={error} onClear={clearError} />
             { isLoading && (
                 <div className="center">
-                    <LoadingSpinner asOverlay />
+                    <LoadingSpinner asOverlay={false} />
                 </div>
             )}
             {!isLoading &&  
