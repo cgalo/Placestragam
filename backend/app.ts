@@ -9,6 +9,7 @@ import mongoose from 'mongoose';
 
 import placesRoute from './routes/places-routes';
 import usersRoute from './routes/users-routes';
+import keysRoute from './routes/keys-routes'
 import HttpError from './models/http-error';
 
 dotenv.config();
@@ -30,6 +31,8 @@ app.use((req: Request, res: Response, next: Next) => {
 app.use('/api/places', placesRoute);
 
 app.use('/api/users', usersRoute);
+
+app.use('/api/keys', keysRoute);        // Fetch external API keys to the front-end
 
 app.use ((req:Request, res:Response, next:Next) => {
     const error = new HttpError('Could not find this route.', 404);
