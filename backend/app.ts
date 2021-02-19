@@ -9,6 +9,7 @@ import mongoose from 'mongoose';
 
 import placesRoute from './routes/places-routes';
 import usersRoute from './routes/users-routes';
+import keysRoute from './routes/keys-routes'
 import HttpError from './models/http-error';
 
 dotenv.config();
@@ -17,9 +18,21 @@ const app = express();
 
 app.use(bodyParser.json());
 
+app.use((req: Request, res: Response, next: Next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader(
+        'Access-Control-Allow-Headers',
+        'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+    );
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE');
+    next();
+});
+
 app.use('/api/places', placesRoute);
 
 app.use('/api/users', usersRoute);
+
+app.use('/api/keys', keysRoute);        // Fetch external API keys to the front-end
 
 app.use ((req:Request, res:Response, next:Next) => {
     const error = new HttpError('Could not find this route.', 404);

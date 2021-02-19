@@ -3,11 +3,11 @@ import React from 'react';
 import UserItem from './UserItem';
 import Card from '../../shared/components/UIElements/Card';
 
-import {User} from './types';
+import { IUser } from '../../types/user-types';
 import './UserList.css';
 
 interface UserListProps {
-    items: Array<User>;         // List of users
+    items: Array<IUser>;         // List of users
 }
 
 const UserList: React.FC<UserListProps> = (props) => {
@@ -25,11 +25,11 @@ const UserList: React.FC<UserListProps> = (props) => {
         <ul className="users-list">
             {props.items.map(user => (
                 <UserItem 
-                    key={user.id.valueOf()}
+                    key={user.id}
                     id={user.id} 
                     image={user.image} 
-                    name={user.name} 
-                    placeCount={user.places} />
+                    name={user.first_name + " " + user.last_name} 
+                    placeCount={user.places.length} />
             ))}
         </ul>
     );

@@ -4,16 +4,16 @@ import { validate } from '../../util/validators';
 import './Input.css';
 
 interface InputProp {
-    type: String;
-    label: String;
+    type: string;
+    label: string;
     validators: Array<any>;
-    onInput: (id: String | string, input: Boolean | boolean, isInputValid: Boolean | boolean) => any;
-    errorText:String;
-    id: String | string;
-    element: String;
-    placeholder?: String | string;
-    rows?: Number | number;
-    initValue?: String | Number;
+    onInput: (id: string, input: boolean, isInputValid: boolean) => any;
+    errorText: string;
+    id: string;
+    element: string;
+    placeholder?: string;
+    rows?: number;
+    initValue?: string | number;
     initValid?: boolean;
 }
 
@@ -46,7 +46,7 @@ const Input:React.FC<InputProp> = (props) => {
     const { value, isValid } = inputState;
 
     useEffect(() => {
-        props.onInput(props.id, inputState.value, inputState.isValid)
+        onInput(id, value, isValid)
     }, [id, value, isValid, onInput]);
 
     const changeHandler = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>)  => {
@@ -65,17 +65,18 @@ const Input:React.FC<InputProp> = (props) => {
 
     const element = props.element === 'input' ? (
         <input 
-            id={props.id.valueOf()}
-            type={props.type.valueOf()}
-            placeholder={props.placeholder?.valueOf()}
+            id={props.id}
+            type={props.type}
+            placeholder={props.placeholder}
             onChange={changeHandler}
             value={inputState.value}
             onBlur={touchHandler}
         />
     ) : (
         <textarea 
-            id={props.id.valueOf()} 
-            rows={props.rows?.valueOf() || 3}
+            placeholder={props.placeholder}
+            id={props.id} 
+            rows={props.rows || 3}
             onChange={changeHandler}
             value={inputState.value}
             onBlur={touchHandler}
@@ -87,7 +88,7 @@ const Input:React.FC<InputProp> = (props) => {
         <div className={`form-control ${!inputState.isValid && inputState.isTouched
             && 'form-control--invalid'}`}
         >
-            <label htmlFor={props.id.valueOf()}>{props.label}</label>
+            <label htmlFor={props.id}>{props.label}</label>
             {element}
             {!inputState.isValid && inputState.isTouched && <p>{props.errorText}</p>}
         </div>

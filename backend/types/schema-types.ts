@@ -2,8 +2,8 @@
  * Schema interfaces utilized for Mongoose in the models directory
  */
 
-import mongoose, { Document } from 'mongoose';
-import type { Location } from './places-types';
+import { Document } from 'mongoose';
+import type { Location } from './util-types';
 
 export interface IPlaceSchema extends Document {
     title: String;

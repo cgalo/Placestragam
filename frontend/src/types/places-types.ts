@@ -1,12 +1,12 @@
 // Global interfaces for place/components
 
 export interface Place {
-    id: String;
-    imageUrl: String;
-    title: String;
-    description: String;
-    address: String;
-    creator: String;
+    id: string;
+    image: string;
+    title: string;
+    description: string;
+    address: string;
+    creator: string;
     location: Coordinates;
 }
 

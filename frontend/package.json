@@ -47,5 +47,6 @@
     "@types/googlemaps": "^3.43.0",
     "@types/react-router-dom": "^5.1.6",
     "@types/react-transition-group": "^4.4.0"
-  }
+  },
+  "proxy": "http://10.0.0.3:5000"
 }

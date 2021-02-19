@@ -6,13 +6,13 @@
 import axios from 'axios';
 import * as dotenv from 'dotenv';
 
-import HttpError from '../models/http-error';
-import { Location } from '../types/places-types';
-import { GeoCodeResponsePayload } from '../types/util-types';
-
 dotenv.config();
 
-const API_KEY = process.env.GOOGLE_MAPS_API_KEY;
+import HttpError from '../models/http-error';
+import { Location } from '../types/util-types';
+import { GeoCodeResponsePayload } from '../types/util-types';
+
+const API_KEY:string = process.env.GOOGLE_MAPS_API_KEY || "";
 
 async function getCoordsForAddress(address:string) {
     const response = await axios.get(
