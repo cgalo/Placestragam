@@ -5,6 +5,7 @@ import Button from '../../shared/components/FormElements/Button';
 import Card from '../../shared/components/UIElements/Card';
 import ErrorModal from '../../shared/components/UIElements/ErrorModal';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
+import ImageUpload from '../../shared/components/FormElements/ImageUpload';
 
 import { useForm } from '../../shared/hooks/form-hook';
 import { useHttpClient } from '../../shared/hooks/http-hook';
@@ -40,7 +41,8 @@ const Auth: React.FC<{}> = (props) => {
             setFormData({
                 ...formState.inputs,
                 first_name: undefined,
-                last_name: undefined
+                last_name: undefined,
+                image: undefined
             }, formState.inputs.email.isValid && formState.inputs.password.isValid);
         } else {
             // We are in loggin mode
@@ -53,6 +55,10 @@ const Auth: React.FC<{}> = (props) => {
                 last_name: {
                     value: '',
                     isValid: false
+                },
+                image: {
+                 value: null,
+                 isValid: false   
                 }
             }, false);
         }
@@ -111,6 +117,7 @@ const Auth: React.FC<{}> = (props) => {
 
     const formSubmitHandler = async (event:React.FormEvent) => {
         event.preventDefault();
+        console.log(formState.inputs);
         if (isLoginMode) {
             // User is attempting to login
             loginRequest();
@@ -151,6 +158,13 @@ const Auth: React.FC<{}> = (props) => {
                             />
                         </React.Fragment>
                     )}
+                    {!isLoginMode && 
+                        <ImageUpload 
+                            id="image" 
+                            onInput={inputHandler}
+                            center 
+                            />
+                    }
                     <Input 
                         id="email"
                         type="email"
