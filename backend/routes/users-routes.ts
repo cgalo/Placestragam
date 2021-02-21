@@ -6,12 +6,14 @@ import { Router } from 'express';
 import { check } from 'express-validator';
 
 import * as usersController from '../controllers/users-controllers';
+import fileUpload from '../middleware/file-upload';
 
 const route = Router();
 
 route.get('/', usersController.getUsers);
 
-route.post('/signup', 
+route.post('/signup',
+    fileUpload.single('image'),
     [
         check('first_name')
             .notEmpty(),
