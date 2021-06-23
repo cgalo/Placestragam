@@ -16,7 +16,7 @@ export const useHttpClient = () => {
     const activeHttpRequest = useRef(emptyHttpReqAborts);
 
     const sendRequest = useCallback(
-        async<T>(url: string, method:string, body:string|null, headers:{}) => {
+        async<T>(url: string, method:string, body:string|null|FormData, headers:{}) => {
             setIsLoading(true);
             const httpAbortCtrl = new AbortController();
             activeHttpRequest.current.push(httpAbortCtrl);

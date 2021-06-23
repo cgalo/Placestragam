@@ -1,5 +1,5 @@
 import multer from 'multer';
-import uuid from 'uuid';
+import {v1 as uuid} from 'uuid';
 
 interface IMimeType {
     'image/png' : string,
@@ -26,7 +26,7 @@ const fileUpload = multer({
         filename: (req, file, callBack) => {
             const fileExtension = MIME_TYPE_MAP[file.mimetype];
             if (fileExtension){
-                callBack(null, uuid.v1() + '.' + fileExtension);        // Generate randome file name with the file extension
+                callBack(null, uuid() + '.' + fileExtension);        // Generate randome file name with the file extension
             }
         }
     }),

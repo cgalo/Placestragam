@@ -89,21 +89,20 @@ const Auth: React.FC<{}> = (props) => {
         }
     }
 
-    const signupRequest = async() => {  // Called when a user is trying to create an account
-        const headers = { 'Content-Type': 'application/json' };
-        const method = 'POST';
-        const body = JSON.stringify({
-            first_name: formState.inputs.first_name.value,
-            last_name:  formState.inputs.last_name.value,
-            email:      formState.inputs.email.value,
-            password:   formState.inputs.password.value,
-            isPublic:   true,
-            image: 
-                "https://s4.anilist.co/file/anilistcdn/user/avatar/large/b459761-7VN7G9wf2mfN.jpg"
-        })
-        const url = 'http://localhost:5000/api/users/signup';
+    const signupRequest = async() => { 
+        // Set the data to be sent to the signup endpoint
+        const formData = new FormData();    // Will help us send data, including binary data (pics)
+        formData.append('email', formState.inputs.email.value);
+        formData.append('first_name', formState.inputs.first_name.value);
+        formData.append('last_name', formState.inputs.last_name.value);
+        formData.append('password', formState.inputs.password.value);
+        formData.append('isPublic', 'true');
+        formData.append('image', formState.inputs.image.value);
+
+        // Setup the information needed to make the request for the httpCliet.sendRequest()
+        const method = 'POST', url = 'http://localhost:5000/api/users/signup';
         try {
-            const responseData = await sendRequest(url, method, body, headers);
+            const responseData = await sendRequest(url, method, formData, {});
             const user = responseData.user;
             if (user){
                 auth.login(user.id);
